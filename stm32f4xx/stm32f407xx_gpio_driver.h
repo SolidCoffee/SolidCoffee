@@ -1,8 +1,9 @@
+//this header file is a driver specific header
 #ifndef INC_STM32F407XX_GPIO_DRIVER_H_
 #define INC_STM32F407XX_GPIO_DRIVER_H_
 
 #include "stm32f407xx.h" //MCU specific data,
-
+#include<stdint.h>
 
 //this is a configureation structure  for a gpio pin
 typedef struct
@@ -26,8 +27,6 @@ typedef struct
 	//pointer to hold the base address for the GPIO peripheral
 	GPIO_RegDef_t *pGPIOX;
 	GPIO_PinConfig_t GPIO_PinConfig;
-
-
 
 }GPIO_Handler_t;
 
@@ -200,13 +199,42 @@ void GPIO_Init(GPIO_Handler_t *pGPIOHandle)
 	}
 	else
 	{
-		//interrupt mode
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == FALLEDGE)
+		{
+			// configure the FTSR
+			EXTI->FTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//clear the RTSR bit
+			EXTI->RTSR &= ~(1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RISEEDGE)
+		{
+			//configure the RTSR
+			EXTI->RTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//clear the FTSR bit
+			EXTI->FTSR &= ~(1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RFT)
+		{
+			//configure  both the RTSR and FTSR
+			EXTI->RTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			EXTI->FTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+
+		// configure the GPIO port selection in SYSCFG_EXTICR
+		uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber /  4;
+		uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
+		uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOX);
+		SYSCFG_PCLK_EN();
+		SYSCFG->EXTICR[temp1] = (portcode << (4* temp2));
+
+		//Enable the exti interrupt delivery
+		EXTI->IMR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	}
 
 	//configure the  speed
 	temp=0;
 
-	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed<< (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->OSPEEDR &= (3 << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->OSPEEDR |= temp;
 
@@ -370,7 +398,64 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 
 
 
-void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi);
-void GPIO_IRQHandling(uint8_t PinNumber);
+void GPIO_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi)
+{
+	if(EnorDi == ENABLE)
+	{
+		if(IRQNumber <= 31)
+		{
+			//program ISER0 register
+			*NVIC_ISER0 |= (1 << IRQNumber);
+		}
+		else if(IRQNumber > 31 && IRQNumber < 64)
+		{
+			//program ISER1 register
+			*NVIC_ISER1 |= (1 << (IRQNumber%32));
+		}
+		else if(IRQNumber >= 64 && IRQNumber < 96)
+		{
+			//Program ISER2 register
+			*NVIC_ISER2 |= (1 << (IRQNumber%64));
+		}
+	}
+	else
+	{
+		if(IRQNumber <= 31)
+		{
+			//program ICER0 register
+			*NVIC_ICER0 |= (1 << IRQNumber);
+		}
+		else if(IRQNumber > 31 && IRQNumber < 64)
+		{
+			//program ICER1 register
+			*NVIC_ICER1 |= (1 << (IRQNumber%32));
+		}
+		else if(IRQNumber >= 64 && IRQNumber < 96)
+		{
+			//Program ICER2 register
+			*NVIC_ICER2 |= (1 << (IRQNumber%64));
+		}
+	}
+}
+
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
+{
+	//fin the ipr register
+	uint8_t iprx = IRQNumber / 4;
+	uint8_t iprx_section = IRQNumber % 4;
+
+	uint8_t shift_amount = (8 * iprx_section) + (8- NO_PR_BITS_IMPLEMENTED);
+	*(NVIC_PR_BASE_ADDR + iprx) |= (IRQPriority << shift_amount);
+}
+
+void GPIO_IRQHandling(uint8_t PinNumber)
+{
+	//clear the exti pr register
+	if(EXTI->PR & (1 << PinNumber))
+	{
+		//clear pending reggister bit
+		EXTI->PR |= (1 << PinNumber);
+	}
+}
 
 #endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */
