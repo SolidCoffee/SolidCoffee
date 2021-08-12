@@ -1,16 +1,32 @@
-/*
- * stm32f407xx.h
- *
- *  Created on: Aug 4, 2021
- *      Author: gianl
- */
-
 #ifndef INC_STM32F407XX_H_
 #define INC_STM32F407XX_H_
 
 #include<stdint.h>
 
 #define __vo volatile
+
+/******************************************************************************
+Processor specific details
+*/
+
+//interrupt set enable registers
+#define NVIC_ISER0			((__vo uint32_t*)0xE000E100)
+#define NVIC_ISER1			((__vo uint32_t*)0xE000E104)
+#define NVIC_ISER2			((__vo uint32_t*)0xE000E108)
+#define NVIC_ISER3			((__vo uint32_t*)0xE000E10C)
+
+//Interrupt clear enable register
+#define NVIC_ICER0			((__vo uint32_t*)0xE000E180)
+#define NVIC_ICER1			((__vo uint32_t*)0xE000E184)
+#define NVIC_ICER2			((__vo uint32_t*)0xE000E188)
+#define NVIC_ICER3			((__vo uint32_t*)0xE000E18C)
+
+//priority register interrupts
+#define NVIC_PR_BASE_ADDR	((__vo uint32_t*)0xE0004000)
+
+#define NO_PR_BITS_IMPLEMENTED		4
+
+
 
 //memory addresses
 #define FLASH_BASEADDR		0x08000000U  //THis is the base address of the flash
@@ -135,6 +151,61 @@ typedef struct
 
 #define RCC					((RCC_RegDef_t*)RCC_BASE)
 
+typedef struct
+{
+	__vo uint32_t MEMRWP;
+	__vo uint32_t PMC;
+	__vo uint32_t EXTICR[4];
+	__vo uint32_t RESERVED[2];
+	__vo uint32_t CMPCR;
+	__vo uint32_t RESERVED2[2];
+	__vo uint32_t CFGR;
+}SYSCFG_RegDef_t;
+
+#define SYSCFG				((SYSCFG_RegDef_t*)SYSCFG_BASE)
+
+//Peripheral register definition structure for EXTI
+typedef struct
+{
+	__vo uint32_t IMR;
+	__vo uint32_t EMR;
+	__vo uint32_t FTSR;
+	__vo uint32_t RTSR;
+	__vo uint32_t SWIER;
+	__vo uint32_t PR;
+}EXTI_RegDef_t;
+
+
+#define EXTI				((EXTI_RegDef_t*)EXTI_BASE)
+
+typedef struct
+{
+	__vo uint32_t CR1;
+	__vo uint32_t CR2;
+	__vo uint32_t SR;
+	__vo uint32_t DR;
+	__vo uint32_t CRCPR;
+	__vo uint32_t RXCRCR;
+	__vo uint32_t TXCRCR;
+	__vo uint32_t I2SCFGR;
+	__vo uint32_t I2SPR;
+
+}SPI_RegDef_t;
+
+#define SPI1					((SPI_RegDef_t*)SPI1_BASE)
+#define SPI2					((SPI_RegDef_t*)SPI2_BASE)
+#define SPI3					((SPI_RegDef_t*)SPI3_BASE)
+
+
+//IRQ interupt request
+#define IRQ_NO_EXTI0		6
+#define IRQ_NO_EXTI1		7
+#define IRQ_NO_EXTI2		8
+#define IRQ_NO_EXTI3		9
+#define IRQ_NO_EXTI4		10
+#define IRQ_NO_EXTI9_5		23
+#define IRQ_NO_EXTI15_10	40
+
 
 //enable clock for GPIOx peripherals
 #define GPIOA_PCLK_EN()	(RCC->AHB1ENR |= (1 << 0))
@@ -153,7 +224,12 @@ typedef struct
 
 
 //CLOCK ENABLE MACROS FOR spiX PERIPHERALS
-#define SPI1_PLCLK_EN()	(RCC->APB2ENR |= (1 << 12))
+#define	SPI1_PCLK_EN()	(RCC->APB2ENR |= (1 << 12))
+#define	SPI2_PCLK_EN()	(RCC->APB1ENR |= (1 << 14))
+#define SPI3_PCLK_EN()	(RCC->APB1ENR |= (1 << 15))
+
+//Clock enable macros for SYSCFG peripheral
+#define SYSCFG_PCLK_EN()	(RCC->APB2ENR |= (1 <<14))
 
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
@@ -167,6 +243,11 @@ typedef struct
 #define GPIOI_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 8))
 
 
+//SPI clock disable
+#define	SPI1_PCLK_DI()	(RCC->APB2ENR &= ~(1 << 12))
+#define	SPI2_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 14))
+#define SPI3_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 15))
+
 
 //GPIO reset maco's
 #define GPIOA_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 <<  0)); }while(0)
@@ -179,7 +260,21 @@ typedef struct
 #define GPIOH_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 <<  7)); }while(0)
 #define GPIOI_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 8)); (RCC->AHB1RSTR &= ~(1 <<  8)); }while(0)
 
+#define SPI1_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 12)); (RCC->APB1RSTR &= ~(1 << 12)); }while(0)
+#define SPI2_REG_RESET()		do{ (RCC->APB2RSTR |= (1 << 14)); (RCC->APB2RSTR &= ~(1 << 14)); }while(0)
+#define SPI3_REG_RESET()		do{ (RCC->APB2RSTR |= (1 << 15)); (RCC->APB2RSTR &= ~(1 << 15)); }while(0)
 
+
+//base configuration number for EXTICR bit setting
+#define GPIO_BASEADDR_TO_CODE(x)		((x == GPIOA) ? 0 :\
+										(x == GPIOB) ? 1 :\
+										(x == GPIOC) ? 2 :\
+										(x == GPIOD) ? 3 :\
+										(x == GPIOE) ? 4 :\
+										(x == GPIOF) ? 5 :\
+										(x == GPIOG) ? 6 :\
+										(x == GPIOH) ? 7 :\
+										(x == GPIOI) ? 8 :0)
 
 
 #define ENABLE			1
