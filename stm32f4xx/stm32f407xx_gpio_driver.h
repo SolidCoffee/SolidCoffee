@@ -46,7 +46,7 @@ typedef struct
 #define LOW				0
 #define MEDIUM			1
 #define FAST			2
-#define HIGH			3
+#define SPEEDHIGH			3
 
 #define NOPUPD			0
 #define PULLUP			1
@@ -187,6 +187,10 @@ void GPIO_PLCK_Control(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 void GPIO_Init(GPIO_Handler_t *pGPIOHandle)
 {
 	uint32_t temp=0;
+
+	//enable the peripheral clock
+
+	GPIO_PLCK_Control(pGPIOHandle->pGPIOX, ENABLE);
 
 	//configure the mode of the gpio pin
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= ANALOG)
