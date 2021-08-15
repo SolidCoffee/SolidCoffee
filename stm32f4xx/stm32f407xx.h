@@ -287,4 +287,15 @@ typedef struct
 #define ALTFUNC			2
 #define ANALOG			3
 
+//bit positoin macros for SPI
+#define CPHA			0
+#define CPOL			1
+
+#define FLAG_RESET		RESET
+#define FLAG_SET		SET
+
+#define BUSY			1
+#define FREE			0
+
 #endif /* INC_STM32F407XX_H_ */
+
