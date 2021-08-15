@@ -17,6 +17,42 @@ typedef struct
 
 }SPI_Config_t;
 
+//device mode macros
+#define MASTER			1
+#define SLAVE			0
+
+//Bus  config macors
+#define FULLDUPLEX			1
+#define HALFDUPLEX			2
+#define SIMPLEXRX			3
+
+//Clock Speed Macros
+#define BAUDDIV2				0
+#define BAUDDIV4				1
+#define BAUDDIV8				2
+#define BAUDDIV16				3
+#define BAUDDIV32				4
+#define BAUDDIV64				5
+#define BAUDDIV128				6
+#define BAUDDIV256				7
+
+//DFF macros
+#define EIGHTBIT				0
+#define SIXTEENBIT				1
+
+// CPOL and CPHA macros
+#define HIGH					1
+#define LOW						0
+
+// SSM macros
+#define SOFTWARE				1
+#define HARDWARE				0
+
+//SPI related status flag definitions
+#define SPI_TXE_FLAG		(1 << 1)
+#define SPI_RXE_FLAG		(1 << 0)
+#define SPI_BUSY_FLAG		(1 << 7)
+
 
 typedef struct
 {
@@ -41,7 +77,11 @@ void SPI_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);
 void SPI_IRQHandling(SPI_Handler_t *pHandle);
 
 //other peripheral control API
+void SPI_PeripheralControlTest(SPI_Handler_t *pSPIHandle, uint8_t EnOrDi);
 
-
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+uint8_t Busy_Check(SPI_RegDef_t *pSPIx);
 
 #endif /* INC_STM32F407XX_SPI_DRIVER_H_ */
