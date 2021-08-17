@@ -83,5 +83,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 uint8_t Busy_Check(SPI_RegDef_t *pSPIx);
+void Clear_and_Push(SPI_RegDef_t *pSPIx, uint32_t Len);
+void delay(void);
 
 #endif /* INC_STM32F407XX_SPI_DRIVER_H_ */
