@@ -25,15 +25,12 @@ typedef struct
 typedef struct
 {
 	//pointer to hold the base address for the GPIO peripheral
-	GPIO_RegDef_t *pGPIOX;
+	GPIO_RegDef_t *pGPIOx;
 	GPIO_PinConfig_t GPIO_PinConfig;
 
 }GPIO_Handler_t;
 
-#define INPUT			0
-#define OUTPUT			1
-#define ALTFUNC			2
-#define ANALOG			3
+
 #define FALLEDGE		4
 #define RISEEDGE		5
 #define RFT				6
@@ -186,94 +183,84 @@ void GPIO_PLCK_Control(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
  */
 void GPIO_Init(GPIO_Handler_t *pGPIOHandle)
 {
-	uint32_t temp=0;
+	 uint32_t temp=0; //temp. register
 
-	//enable the peripheral clock
+		 //enable the peripheral clock
 
-	GPIO_PLCK_Control(pGPIOHandle->pGPIOX, ENABLE);
+	 	 GPIO_PLCK_Control(pGPIOHandle->pGPIOx, ENABLE);
 
-	//configure the mode of the gpio pin
-	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= ANALOG)
-	{
-		//non interrupt mode
-		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-		pGPIOHandle->pGPIOX->MODER &= ~(3 << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-		pGPIOHandle->pGPIOX->MODER |=temp;
-		temp=0;
-	}
-	else
-	{
-		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == FALLEDGE)
+		//1 . configure the mode of gpio pin
+
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= ANALOG)
 		{
-			// configure the FTSR
-			EXTI->FTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			//clear the RTSR bit
-			EXTI->RTSR &= ~(1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-		}
-		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RISEEDGE)
+			//the non interrupt mode
+			temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber ) );
+			pGPIOHandle->pGPIOx->MODER &= ~( 0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
+			pGPIOHandle->pGPIOx->MODER |= temp; //setting
+
+		}else
 		{
-			//configure the RTSR
-			EXTI->RTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			//clear the FTSR bit
-			EXTI->FTSR &= ~(1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//this part will code later . ( interrupt mode)
+			if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode ==FALLEDGE )
+			{
+				//1. configure the FTSR
+				EXTI->FTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+				//Clear the corresponding RTSR bit
+				EXTI->RTSR &= ~( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+
+			}else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode ==RISEEDGE )
+			{
+				//1 . configure the RTSR
+				EXTI->RTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+				//Clear the corresponding RTSR bit
+				EXTI->FTSR &= ~( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+
+			}else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RFT )
+			{
+				//1. configure both FTSR and RTSR
+				EXTI->RTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+				//Clear the corresponding RTSR bit
+				EXTI->FTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			}
+
+			//2. configure the GPIO port selection in SYSCFG_EXTICR
+			uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4 ;
+			uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
+			uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);
+			SYSCFG_PCLK_EN();
+			SYSCFG->EXTICR[temp1] = portcode << ( temp2 * 4);
+
+			//3 . enable the exti interrupt delivery using IMR
+			EXTI->IMR |= 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber;
 		}
-		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RFT)
+
+		//2. configure the speed
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
+		pGPIOHandle->pGPIOx->OSPEEDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
+		pGPIOHandle->pGPIOx->OSPEEDR |= temp;
+
+		//3. configure the pupd settings
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_pinPuPdControl << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
+		pGPIOHandle->pGPIOx->PUPDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
+		pGPIOHandle->pGPIOx->PUPDR |= temp;
+
+
+		//4. configure the optype
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber );
+		pGPIOHandle->pGPIOx->OTYPER &= ~( 0x1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //clearing
+		pGPIOHandle->pGPIOx->OTYPER |= temp;
+
+		//5. configure the alt functionality
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == ALTFUNC)
 		{
-			//configure  both the RTSR and FTSR
-			EXTI->RTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			EXTI->FTSR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//configure the alt function registers.
+			uint8_t temp1, temp2;
+
+			temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;
+			temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber  % 8;
+			pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << ( 4 * temp2 ) ); //clearing
+			pGPIOHandle->pGPIOx->AFR[temp1] |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * temp2 ) );
 		}
-
-		// configure the GPIO port selection in SYSCFG_EXTICR
-		uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber /  4;
-		uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
-		uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOX);
-		SYSCFG_PCLK_EN();
-		SYSCFG->EXTICR[temp1] = (portcode << (4* temp2));
-
-		//Enable the exti interrupt delivery
-		EXTI->IMR |= (1  << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-	}
-
-	//configure the  speed
-	temp=0;
-
-	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed<< (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->OSPEEDR &= (3 << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->OSPEEDR |= temp;
-
-	//configure the pupd settings
-	temp=0;
-
-	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_pinPuPdControl << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->PUPDR &= ~(3 << (2*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->PUPDR |= temp;
-
-	//configure  the optype
-	temp=0;
-
-	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			pGPIOHandle->pGPIOX->OTYPER &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			pGPIOHandle->pGPIOX->OTYPER |= temp;
-
-	//configure the alt functionality
-	temp =0;
-	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == ALTFUNC)
-	{
-		//configure the alt function registers
-		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber <= 7)
-		{
-			temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->AFR[0] &= ~(0xF << (4*pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->AFR[0] |=temp;
-		}
-		else
-		{
-			temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4*(pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber%8)));
-				pGPIOHandle->pGPIOX->AFR[1] &= ~(0xF << (4*(pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber%8)));
-				pGPIOHandle->pGPIOX->AFR[1] |= temp;
-		}
-	}
 }
 
 
