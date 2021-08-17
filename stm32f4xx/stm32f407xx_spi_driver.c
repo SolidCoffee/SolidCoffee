@@ -137,7 +137,33 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
 	}
 }
 
-void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len)
+{
+	while(Len > 0)
+		{
+			//Wait until  the RXNE is empty
+			while(SPI_GetFlagStatus(pSPIx,SPI_RXE_FLAG) == FLAG_RESET);
+
+			//check the DFF bit in CR1
+			if((pSPIx->CR1 & (1 << 11)))
+			{
+				//16 bit
+				//load the data from DR to RX buffer
+				*((uint16_t*)pRxBuffer) = pSPIx->DR;
+				Len--;
+				Len--;
+				(uint16_t*)pRxBuffer++;
+			}
+			else
+			{
+				//8 bit
+				//loadd the data into the DR
+				*pRxBuffer = pSPIx->DR;
+				Len--;
+				pRxBuffer++;
+			}
+		}
+}
 
 //IRQ config and ISR handling
 void SPI_ITConfig(uint8_t IRQNumber, uint8_t Enordi);
@@ -203,3 +229,23 @@ uint8_t Busy_Check(SPI_RegDef_t *pSPIx)
 
 	return FREE;
 }
+
+void Clear_and_Push(SPI_RegDef_t *pSPIx, uint32_t Len)
+{
+
+	uint8_t dummy_write = 0xff;
+	uint8_t dummy_read;
+
+	//read the RX buffer to clear it
+	SPI_ReceiveData(pSPIx, &dummy_read,Len);
+
+	//sending dummy byte to flush our the response from the slave
+	SPI_SendData(pSPIx,&dummy_write,1);
+}
+
+
+void delay(void)
+{
+	for(uint32_t i = 0; i < 500000 ; i++);
+}
+
