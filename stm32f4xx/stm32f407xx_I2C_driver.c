@@ -44,7 +44,7 @@ void I2C_PeriClockControl(I2C_RegDef_t *pI2Cx, uint8_t EnorDi)
 
 uint32_t RCC_GetPLLOutputClock(void)
 {
-	return 0;//we dont use this function 
+	return 0;//we dont use this function
 }
 
 uint32_t RCC_GetPCLK1Value(void)
@@ -138,6 +138,18 @@ void I2C_init(I2C_Handle_t *pI2CHandle)
 		tempreg |= (ccr_value & 0xFFF);
 	}
 	pI2CHandle->pI2Cx->CCR = tempreg;
+
+	//TRISE config
+	if(pI2CHandle->I2C_Config.I2C_SCLSpeed <= I2C_SM)
+		{
+			//standard mode
+			tempreg = (RCC_GetPCLK1Value() /1000000U) +1;
+		}
+		else
+		{
+			tempreg = ((RCC_GetPCLK1Value() * 300)/ 1000000000U) +1;
+		}
+	pI2CHandle->pI2Cx->TRISE = (tempreg & 0x3F);
 }
 
 //Sending the data****************************************************************************************************************
