@@ -2,6 +2,7 @@
 #define INC_STM32F407XX_H_
 
 #include<stdint.h>
+#include<stddef.h>
 
 #define __vo volatile
 
@@ -196,8 +197,26 @@ typedef struct
 #define SPI2					((SPI_RegDef_t*)SPI2_BASE)
 #define SPI3					((SPI_RegDef_t*)SPI3_BASE)
 
+typedef struct
+{
+	__vo uint32_t CR1;
+	__vo uint32_t CR2;
+	__vo uint32_t OAR1;
+	__vo uint32_t OAR2;
+	__vo uint32_t DR;
+	__vo uint32_t SR1;
+	__vo uint32_t SR2;
+	__vo uint32_t CCR;
+	__vo uint32_t TRISE;
+	__vo uint32_t FLTR;
 
-//IRQ interupt request
+}I2C_RegDef_t;
+
+#define I2C1					((I2C_RegDef_t*)I2C1_BASE)
+#define I2C2					((I2C_RegDef_t*)I2C2_BASE)
+#define I2C3					((I2C_RegDef_t*)I2C3_BASE)
+
+//IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
 #define IRQ_NO_EXTI1		7
 #define IRQ_NO_EXTI2		8
@@ -205,6 +224,11 @@ typedef struct
 #define IRQ_NO_EXTI4		10
 #define IRQ_NO_EXTI9_5		23
 #define IRQ_NO_EXTI15_10	40
+
+//IRQ interrupt request for SPI
+#define IRQ_NO_SPI1			35
+#define IRQ_NO_SPI2         36
+#define IRQ_NO_SPI3         51
 
 
 //enable clock for GPIOx peripherals
@@ -228,6 +252,11 @@ typedef struct
 #define	SPI2_PCLK_EN()	(RCC->APB1ENR |= (1 << 14))
 #define SPI3_PCLK_EN()	(RCC->APB1ENR |= (1 << 15))
 
+//Clock enable macros for I2C peripherals
+#define I2C1_PCLK_EN()	(RCC->APB1ENR |= (1 << 21))
+#define I2C2_PCLK_EN()	(RCC->APB1ENR |= (1 << 22))
+#define I2C3_PCLK_EN()	(RCC->APB1ENR |= (1 << 23))
+
 //Clock enable macros for SYSCFG peripheral
 #define SYSCFG_PCLK_EN()	(RCC->APB2ENR |= (1 <<14))
 
@@ -248,6 +277,11 @@ typedef struct
 #define	SPI2_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 14))
 #define SPI3_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 15))
 
+//Clock disable macros for I2C peripherals
+#define I2C1_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 21))
+#define I2C2_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 22))
+#define I2C3_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 23))
+
 
 //GPIO reset maco's
 #define GPIOA_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 <<  0)); }while(0)
@@ -260,9 +294,13 @@ typedef struct
 #define GPIOH_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 <<  7)); }while(0)
 #define GPIOI_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 8)); (RCC->AHB1RSTR &= ~(1 <<  8)); }while(0)
 
-#define SPI1_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 12)); (RCC->APB1RSTR &= ~(1 << 12)); }while(0)
-#define SPI2_REG_RESET()		do{ (RCC->APB2RSTR |= (1 << 14)); (RCC->APB2RSTR &= ~(1 << 14)); }while(0)
-#define SPI3_REG_RESET()		do{ (RCC->APB2RSTR |= (1 << 15)); (RCC->APB2RSTR &= ~(1 << 15)); }while(0)
+#define SPI1_REG_RESET()		do{ (RCC->APB2RSTR |= (1 << 12)); (RCC->APB2RSTR &= ~(1 << 12)); }while(0)
+#define SPI2_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 14)); (RCC->APB1RSTR &= ~(1 << 14)); }while(0)
+#define SPI3_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 15)); (RCC->APB1RSTR &= ~(1 << 15)); }while(0)
+
+#define I2C1_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 21)); (RCC->APB1RSTR &= ~(1 << 21)); }while(0)
+#define I2C2_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 22)); (RCC->APB1RSTR &= ~(1 << 22)); }while(0)
+#define I2C3_REG_RESET()		do{ (RCC->APB1RSTR |= (1 << 23)); (RCC->APB1RSTR &= ~(1 << 23)); }while(0)
 
 
 //base configuration number for EXTICR bit setting
