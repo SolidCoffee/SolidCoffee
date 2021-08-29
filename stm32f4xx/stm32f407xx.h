@@ -230,6 +230,14 @@ typedef struct
 #define IRQ_NO_SPI2         36
 #define IRQ_NO_SPI3         51
 
+//IRQ interrupt request for I2C
+#define IRQ_I2C1_EV			31
+#define IRQ_I2C1_ER			32
+#define IRQ_I2C2_EV			33
+#define IRQ_I2C2_ER			34
+#define IRQ_I2C3_EV			79
+#define IRQ_I2C3_ER			80
+
 
 //enable clock for GPIOx peripherals
 #define GPIOA_PCLK_EN()	(RCC->AHB1ENR |= (1 << 0))
