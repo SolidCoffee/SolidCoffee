@@ -3,7 +3,7 @@
 
 #include<stdint.h>
 #include<stddef.h>
- 
+
 #define __vo volatile
 
 /******************************************************************************
@@ -76,6 +76,15 @@ Processor specific details
 #define USART3_BASE			((APB1PERIPH_BASE)+(0x4800))
 #define UART4_BASE			((APB1PERIPH_BASE)+(0x4C00))
 #define UART5_BASE			((APB1PERIPH_BASE)+(0x5000))
+#define TIM2_BASE			((APB1PERIPH_BASE)+(0x0000))
+#define TIM3_BASE			((APB1PERIPH_BASE)+(0x0400))
+#define TIM4_BASE			((APB1PERIPH_BASE)+(0x0800))
+#define TIM5_BASE			((APB1PERIPH_BASE)+(0x0C00))
+#define TIM6_BASE			((APB1PERIPH_BASE)+(0x1000))
+#define TIM7_BASE			((APB1PERIPH_BASE)+(0x1400))
+#define TIM12_BASE			((APB1PERIPH_BASE)+(0x1800))
+#define TIM13_BASE			((APB1PERIPH_BASE)+(0x1C00))
+#define TIM14_BASE			((APB1PERIPH_BASE)+(0x2000))
 
 
 //APB2 peripheral addresses
@@ -84,8 +93,11 @@ Processor specific details
 #define USART6_BASE			((APB2PERIPH_BASE)+(0X1400))
 #define EXTI_BASE			((APB2PERIPH_BASE)+(0X3C00))
 #define SYSCFG_BASE			((APB2PERIPH_BASE)+(0X3800))
-
-
+#define TIM1_BASE			((APB2PERIPH_BASE)+(0X0000))
+#define TIM8_BASE			((APB2PERIPH_BASE)+(0X0400))
+#define TIM9_BASE			((APB2PERIPH_BASE)+(0X4000))
+#define TIM10_BASE			((APB2PERIPH_BASE)+(0X4400))
+#define TIM11_BASE			((APB2PERIPH_BASE)+(0X4800))
 
 typedef struct
 {
@@ -216,6 +228,130 @@ typedef struct
 #define I2C2					((I2C_RegDef_t*)I2C2_BASE)
 #define I2C3					((I2C_RegDef_t*)I2C3_BASE)
 
+typedef struct
+{
+	uint32_t SR;
+	uint32_t DR;
+	uint32_t BRR;
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t CR3;
+	uint32_t GTPR;
+
+}USART_RegDef_t;
+
+#define USART1					((USART_RegDef_t*)USART1_BASE)
+#define USART2					((USART_RegDef_t*)USART2_BASE)
+#define USART3					((USART_RegDef_t*)USART3_BASE)
+#define UART4					((USART_RegDef_t*)UART4_BASE)
+#define UART5					((USART_RegDef_t*)UART5_BASE)
+#define USART6					((USART_RegDef_t*)USART6_BASE)
+
+
+//BASIC TIMER
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t Reserved1;
+	uint32_t DIER;
+	uint32_t SR;
+	uint32_t EGR;
+	uint32_t Reserved[3];
+	uint32_t CNT;
+	uint32_t PSC;
+	uint32_t ARR;
+
+}BasicTIM_RegDef_t;
+
+#define TIM6				((BasicTIM_RegDef_t*)TIM6_BASE)
+#define TIM7				((BasicTIM_RegDef_t*)TIM7_BASE)
+
+//GENERAL-PURPOSE TIMER
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t SMCR;
+	uint32_t DIER;
+	uint32_t SR;
+	uint32_t EGR;
+	uint32_t CCMR1;
+	uint32_t CCMR2;
+	uint32_t CCER;
+	uint32_t CNT;
+	uint32_t PSC;
+	uint32_t ARR;
+	uint32_t Reserved1;
+	uint32_t CCR1;
+	uint32_t CCR2;
+	uint32_t CCR3;
+	uint32_t CCR4;
+	uint32_t Reserved2;
+	uint32_t DCR;
+	uint32_t DMAR;
+	uint32_t TIM2_OR;
+	uint32_t TIM5_OR;
+
+}TIM2_5_RegDef_t;
+
+#define TIM2				((TIM2_5_RegDef_t*)TIM2_BASE)
+#define TIM3				((TIM2_5_RegDef_t*)TIM3_BASE)
+#define TIM4				((TIM2_5_RegDef_t*)TIM4_BASE)
+#define TIM5				((TIM2_5_RegDef_t*)TIM5_BASE)
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t SMCR;
+	uint32_t DIER;
+	uint32_t SR;
+	uint32_t EGR;
+	uint32_t CCMR1[2];
+	uint32_t Reserved1;
+	uint32_t CCER;
+	uint32_t CNT;
+	uint32_t PSC;
+	uint32_t ARR;
+	uint32_t Reserved2;
+	uint32_t CCR1;
+	uint32_t Reserved3;
+	uint32_t OR;
+
+}TIM9_14_RegDef_t;
+
+#define TIM9				((TIM9_14_RegDef_t*)TIM9_BASE)
+#define TIM10				((TIM9_14_RegDef_t*)TIM10_BASE)
+#define TIM11				((TIM9_14_RegDef_t*)TIM11_BASE)
+#define TIM12				((TIM9_14_RegDef_t*)TIM12_BASE)
+#define TIM13				((TIM9_14_RegDef_t*)TIM13_BASE)
+#define TIM14				((TIM9_14_RegDef_t*)TIM14_BASE)
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t SMCR;
+	uint32_t DIER;
+	uint32_t SR;
+	uint32_t EGR;
+	uint32_t CCMR1[2];
+	uint32_t CCMR2[2];
+	uint32_t CCER;
+	uint32_t CNT;
+	uint32_t PSC;
+	uint32_t ARR;
+	uint32_t RCR;
+	uint32_t CCR[4];
+	uint32_t BDTR;
+	uint32_t DCR;
+	uint32_t DMAR;
+
+}AdvTIM_RegDef_t;
+
+#define TIM1			((AdvTIM_RegDef_t*)TIM1_BASE)
+#define TIM8			((AdvTIM_RegDef_t*)TIM8_BASE)
+
 //IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
 #define IRQ_NO_EXTI1		7
@@ -267,6 +403,10 @@ typedef struct
 
 //Clock enable macros for SYSCFG peripheral
 #define SYSCFG_PCLK_EN()	(RCC->APB2ENR |= (1 <<14))
+
+//Timer clock enable macros
+#define TIM3_CLK_EN()	(RCC->APB1ENR |= (1 << 1))
+#define TIM4_CLK_EN()	(RCC->APB1ENR |= (1 << 2))
 
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
