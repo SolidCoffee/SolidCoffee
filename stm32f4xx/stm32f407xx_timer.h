@@ -13,6 +13,7 @@ typedef struct
 	uint8_t TIM_Mode;
 	uint8_t TIM_Direction;
 	uint8_t PWM_Mode;
+	uint8_t PWM_Channel;
 
 }TIM2_5_PinConfig_t;
 
@@ -47,10 +48,10 @@ typedef struct
 
 }TIM_Handler_t;
 
-void TIM_CLKEnable(TIM2_5_RegDef_t *pTIMx, uint8_t EnorDi);
-void PWMInit(TIM_Handler_t *pTIMHandle);
+void TIM2_5_CLKEnable(TIM2_5_RegDef_t *pTIMx, uint8_t EnorDi);
+void PWM2_5_Init(TIM_Handler_t *pTIMHandle);
 
-void ServoAngle(TIM2_5_RegDef_t *pTIMx, uint32_t Angle);
+void ServoAngle(TIM2_5_RegDef_t *pTIMx, uint32_t Angle, uint8_t Channel);
 
 
 #endif /* INC_STM32F407XX_TIMER_H_ */
