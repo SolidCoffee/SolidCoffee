@@ -318,14 +318,34 @@ typedef struct
 	uint32_t Reserved3;
 	uint32_t OR;
 
+}TIM10_11_13_14_RegDef_t;
+
+
+#define TIM10				((TIM10_11_13_14_RegDef_t*)TIM10_BASE)
+#define TIM11				((TIM10_11_13_14_RegDef_t*)TIM11_BASE)
+#define TIM13				((TIM10_11_13_14_RegDef_t*)TIM13_BASE)
+#define TIM14				((TIM10_11_13_14_RegDef_t*)TIM14_BASE)
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t SMCR;
+	uint32_t DIER;
+	uint32_t SR;
+	uint32_t EGR;
+	uint32_t CCMR1[2];
+	uint32_t Reserved1;
+	uint32_t CCER;
+	uint32_t CNT;
+	uint32_t PSC;
+	uint32_t ARR;
+	uint32_t Reserved2;
+	uint32_t CCR1;
+	uint32_t CCR2;
 }TIM9_14_RegDef_t;
 
 #define TIM9				((TIM9_14_RegDef_t*)TIM9_BASE)
-#define TIM10				((TIM9_14_RegDef_t*)TIM10_BASE)
-#define TIM11				((TIM9_14_RegDef_t*)TIM11_BASE)
 #define TIM12				((TIM9_14_RegDef_t*)TIM12_BASE)
-#define TIM13				((TIM9_14_RegDef_t*)TIM13_BASE)
-#define TIM14				((TIM9_14_RegDef_t*)TIM14_BASE)
 
 typedef struct
 {
@@ -405,8 +425,20 @@ typedef struct
 #define SYSCFG_PCLK_EN()	(RCC->APB2ENR |= (1 <<14))
 
 //Timer clock enable macros
+#define TIM1_CLK_EN()	(RCC->APB2ENR |= (1 << 0))
+#define TIM2_CLK_EN()	(RCC->APB1ENR |= (1 << 0))
 #define TIM3_CLK_EN()	(RCC->APB1ENR |= (1 << 1))
 #define TIM4_CLK_EN()	(RCC->APB1ENR |= (1 << 2))
+#define TIM5_CLK_EN()	(RCC->APB1ENR |= (1 << 3))
+#define TIM6_CLK_EN()	(RCC->APB1ENR |= (1 << 4))
+#define TIM7_CLK_EN()	(RCC->APB1ENR |= (1 << 5))
+#define TIM8_CLK_EN()	(RCC->APB2ENR |= (1 << 1))
+#define TIM9_CLK_EN()	(RCC->APB2ENR |= (1 << 16))
+#define TIM10_CLK_EN()	(RCC->APB2ENR |= (1 << 17))
+#define TIM11_CLK_EN()	(RCC->APB2ENR |= (1 << 18))
+#define TIM12_CLK_EN()	(RCC->APB1ENR |= (1 << 12))
+#define TIM13_CLK_EN()	(RCC->APB1ENR |= (1 << 13))
+#define TIM14_CLK_EN()	(RCC->APB1ENR |= (1 << 14))
 
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
@@ -429,6 +461,22 @@ typedef struct
 #define I2C1_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 21))
 #define I2C2_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 22))
 #define I2C3_PCLK_DI()	(RCC->APB1ENR &= ~(1 << 23))
+
+//Timer clock disable macros
+#define TIM1_CLK_DI()	(RCC->APB2ENR &= ~(1 << 0))
+#define TIM2_CLK_DI()	(RCC->APB1ENR &= ~(1 << 0))
+#define TIM3_CLK_DI()	(RCC->APB1ENR &= ~(1 << 1))
+#define TIM4_CLK_DI()	(RCC->APB1ENR &= ~(1 << 2))
+#define TIM5_CLK_DI()	(RCC->APB1ENR &= ~(1 << 3))
+#define TIM6_CLK_DI()	(RCC->APB1ENR &= ~(1 << 4))
+#define TIM7_CLK_DI()	(RCC->APB1ENR &= ~(1 << 5))
+#define TIM8_CLK_DI()	(RCC->APB2ENR &= ~(1 << 1))
+#define TIM9_CLK_DI()	(RCC->APB2ENR &= ~(1 << 16))
+#define TIM10_CLK_DI()	(RCC->APB2ENR &= ~(1 << 17))
+#define TIM11_CLK_DI()	(RCC->APB2ENR &= ~(1 << 18))
+#define TIM12_CLK_DI()	(RCC->APB1ENR &= ~(1 << 12))
+#define TIM13_CLK_DI()	(RCC->APB1ENR &= ~(1 << 13))
+#define TIM14_CLK_DI()	(RCC->APB1ENR &= ~(1 << 14))
 
 
 //GPIO reset maco's
@@ -484,4 +532,3 @@ typedef struct
 #define FREE			0
 
 #endif /* INC_STM32F407XX_H_ */
-
