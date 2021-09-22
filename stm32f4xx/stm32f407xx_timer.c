@@ -144,24 +144,27 @@ void PWM2_5_Init(TIM_Handler_t *pTIMHandle)
 	pTIMHandle->pTIMx->PSC = pTIMHandle->TIM_Config.TIM_Prescaler;
 	pTIMHandle->pTIMx->ARR = pTIMHandle->TIM_Config.TIM_ARR;
 
-	//Rest postion of motor
-	/*if(pTIMHandle->TIM_Config.PWM_Channel == 1)
-	{
-		pTIMHandle->pTIMx->CCR1 = pTIMHandle->TIM_Config.TIM_DutyCycle;
-	}
-	else if(pTIMHandle->TIM_Config.PWM_Channel == 2)
-	{
-		pTIMHandle->pTIMx->CCR2 = pTIMHandle->TIM_Config.TIM_DutyCycle;
-	}
-	else if(pTIMHandle->TIM_Config.PWM_Channel == 3)
-	{
-		pTIMHandle->pTIMx->CCR3 = pTIMHandle->TIM_Config.TIM_DutyCycle;
-	}
-	else if(pTIMHandle->TIM_Config.PWM_Channel == 4)
-	{
-		pTIMHandle->pTIMx->CCR4 = pTIMHandle->TIM_Config.TIM_DutyCycle;
-	}*/
 
+	//Rest postion of motor
+	if(pTIMHandle->TIM_Config.TIM_RestPostion > 0)
+	{
+		if(pTIMHandle->TIM_Config.PWM_Channel == 1)
+		{
+			pTIMHandle->pTIMx->CCR1 = pTIMHandle->TIM_Config.TIM_RestPostion;
+		}
+		else if(pTIMHandle->TIM_Config.PWM_Channel == 2)
+		{
+			pTIMHandle->pTIMx->CCR2 = pTIMHandle->TIM_Config.TIM_RestPostion;
+		}
+		else if(pTIMHandle->TIM_Config.PWM_Channel == 3)
+		{
+			pTIMHandle->pTIMx->CCR3 = pTIMHandle->TIM_Config.TIM_RestPostion;
+		}
+		else if(pTIMHandle->TIM_Config.PWM_Channel == 4)
+		{
+			pTIMHandle->pTIMx->CCR4 = pTIMHandle->TIM_Config.TIM_RestPostion;
+		}
+	}
 	pTIMHandle->pTIMx->EGR |= (1 << 0);//enables the UG bit
 
 	pTIMHandle->pTIMx->CR1 |= (1 << 0); //enables the Counter
