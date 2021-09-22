@@ -11,7 +11,7 @@ void delay2(void)
 
 void delay(void)
 {
-	for(uint32_t i = 0 ; i < 100000/2; i ++);
+	for(uint32_t i = 0 ; i < 10000; i ++);
 }
 
 
@@ -56,16 +56,45 @@ void PWMTIM(void)
 	PWM2_5_Init(&TIMPWM);
 }
 
+void GPIO_ButtonInit()
+{
+	GPIO_Handler_t GPIOBtn;
+
+	GPIOBtn.pGPIOx = GPIOA;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinNumber = 0;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = INPUT;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinSpeed = SPEEDHIGH;
+	GPIOBtn.GPIO_PinConfig.GPIO_pinPuPdControl =NOPUPD;
+
+	GPIO_Init(&GPIOBtn);
+
+}
+
 int main(void)
 {
 	PWM_GPIOInits();
 	TIM2_5_CLKEnable(TIM4, ENABLE); //Enables HSI and TIM3 peripheral clock
 
+	GPIO_ButtonInit();
+
 	PWMTIM();
 
-	delay2();
-
 	while(1)
+	{
+
+		ServoAngle(TIM4, 1, 1);
+		while(! GPIO_ReadFromInputPin(GPIOA,0));
+		delay();
+		ServoAngle(TIM4, 270, 1);
+		while(! GPIO_ReadFromInputPin(GPIOA,0));
+		delay();
+	}
+
+
+
+}
+
+/*while(1)
 	{
 		for(uint32_t i = 1; i < 270; i++)
 		{
@@ -79,6 +108,4 @@ int main(void)
 			ServoAngle(TIM4, i, 2);
 			delay();
 		}
-	}
-
-}
+	}*/
