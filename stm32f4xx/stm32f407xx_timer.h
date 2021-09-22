@@ -9,7 +9,7 @@ typedef struct
 	uint32_t TIM_ARR;
 	uint16_t TIM_Prescaler;
 	uint8_t TIM_Polarity;
-	uint32_t TIM_DutyCycle;
+	uint32_t TIM_RestPostion;
 	uint8_t TIM_Mode;
 	uint8_t TIM_Direction;
 	uint8_t PWM_Mode;
@@ -34,6 +34,9 @@ typedef struct
 //Macros for polarity
 #define POLHIGH		0
 #define POLLOW		1
+
+//macros for rest position
+#define DISABLE		0
 
 
 
