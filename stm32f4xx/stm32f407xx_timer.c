@@ -145,7 +145,7 @@ void PWM2_5_Init(TIM_Handler_t *pTIMHandle)
 	pTIMHandle->pTIMx->ARR = pTIMHandle->TIM_Config.TIM_ARR;
 
 	//Rest postion of motor
-	if(pTIMHandle->TIM_Config.PWM_Channel == 1)
+	/*if(pTIMHandle->TIM_Config.PWM_Channel == 1)
 	{
 		pTIMHandle->pTIMx->CCR1 = pTIMHandle->TIM_Config.TIM_DutyCycle;
 	}
@@ -160,7 +160,7 @@ void PWM2_5_Init(TIM_Handler_t *pTIMHandle)
 	else if(pTIMHandle->TIM_Config.PWM_Channel == 4)
 	{
 		pTIMHandle->pTIMx->CCR4 = pTIMHandle->TIM_Config.TIM_DutyCycle;
-	}
+	}*/
 
 	pTIMHandle->pTIMx->EGR |= (1 << 0);//enables the UG bit
 
