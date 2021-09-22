@@ -1,4 +1,4 @@
-#include "stm32f407xx.h"
+##include "stm32f407xx.h"
 #include "stm32f407xx_gpio_driver.h"
 #include "stm32f407xx_timer.h"
 #include<stdio.h>
@@ -45,7 +45,7 @@ void PWMTIM(void)
 	TIMPWM.TIM_Config.TIM_Prescaler = 99;
 	TIMPWM.TIM_Config.TIM_Mode = EDGE;
 	TIMPWM.TIM_Config.PWM_Mode = PWM1;
-	TIMPWM.TIM_Config.TIM_DutyCycle = 479*.20;
+	TIMPWM.TIM_Config.TIM_RestPostion = DISABLE;
 	TIMPWM.TIM_Config.TIM_Polarity = POLHIGH;
 	TIMPWM.TIM_Config.PWM_Channel = 1;
 
