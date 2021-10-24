@@ -242,10 +242,3 @@ void Clear_and_Push(SPI_RegDef_t *pSPIx, uint32_t Len)
 	//sending dummy byte to flush our the response from the slave
 	SPI_SendData(pSPIx,&dummy_write,1);
 }
-
-
-void delay(void)
-{
-	for(uint32_t i = 0; i < 500000 ; i++);
-}
-
