@@ -11,7 +11,7 @@ void delay2(void)
 
 void delay(void)
 {
-	for(uint32_t i = 0 ; i < 10000; i ++);
+	for(uint32_t i = 0 ; i < 80000; i ++);
 }
 
 
@@ -33,6 +33,9 @@ void PWM_GPIOInits(void)
 
 	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 7;
 	GPIO_Init(&PWMPins);
+
+	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 8;
+	GPIO_Init(&PWMPins);
 }
 
 void PWMTIM(void)
@@ -52,6 +55,10 @@ void PWMTIM(void)
 	PWM2_5_Init(&TIMPWM);
 
 	TIMPWM.TIM_Config.PWM_Channel = 2;
+
+	PWM2_5_Init(&TIMPWM);
+
+	TIMPWM.TIM_Config.PWM_Channel = 3;
 
 	PWM2_5_Init(&TIMPWM);
 }
@@ -79,7 +86,32 @@ int main(void)
 
 	PWMTIM();
 
-	while(1)
+	//delay2();
+
+
+	ServoAngle(TIM4, 170, 3);
+	ServoAngle(TIM4, 135, 1);
+	ServoAngle(TIM4, 135, 2);
+
+	/*while(1)
+		{
+			for(uint32_t i = 15; i < 180; i++)
+			{
+				ServoAngle(TIM4, i, 1);
+				ServoAngle(TIM4, i, 2);
+				ServoAngle(TIM4, i, 3);
+				delay();
+			}
+			for(uint32_t i = 180; i > 15; i--)
+			{
+				ServoAngle(TIM4, i, 1);
+				ServoAngle(TIM4, i, 2);
+				ServoAngle(TIM4, i, 3);
+				delay();
+			}
+		}*/
+
+	/*while(1)
 	{
 
 		ServoAngle(TIM4, 1, 1);
@@ -88,7 +120,7 @@ int main(void)
 		ServoAngle(TIM4, 270, 1);
 		while(! GPIO_ReadFromInputPin(GPIOA,0));
 		delay();
-	}
+	}*/
 
 
 
