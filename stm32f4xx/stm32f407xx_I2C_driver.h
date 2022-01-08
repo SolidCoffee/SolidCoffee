@@ -1,452 +1,114 @@
-//this header file is a driver specific header
-#ifndef INC_STM32F407XX_GPIO_DRIVER_H_
-#define INC_STM32F407XX_GPIO_DRIVER_H_
+#ifndef INC_STM32F407XX_I2C_DRIVER_H_
+#define INC_STM32F407XX_I2C_DRIVER_H_
 
-#include "stm32f407xx.h" //MCU specific data,
+#include "stm32f407xx.h"
+
 #include<stdint.h>
 
-//this is a configureation structure  for a gpio pin
 typedef struct
 {
-	uint8_t GPIO_PinNumber;
-	uint8_t GPIO_PinMode;
-	uint8_t GPIO_PinSpeed;
-	uint8_t GPIO_pinPuPdControl;
-	uint8_t GPIO_PinOPType;
-	uint8_t GPIO_PinAltFunMode;
+	uint32_t I2C_SCLSpeed;
+	uint8_t I2C_DeviceAddress;
+	uint8_t I2C_ACKControl;
+	uint16_t I2C_FMDutyCycle;
+}I2C_Config_t;
 
-}GPIO_PinConfig_t;
+//I2C SCLSpeed
+#define I2C_SM	100000
+#define I2C_FM4K	400000
+#define I2C_FM2K	200000
+
+//Device address
+//we do not configure with macros, given by user
+
+// ack control
+//enable disable macros
+
+//duty cycle
+#define DUTY2 0
+#define DUTY169 1
+
+//I2C related status flags
+#define I2C_TXE_FLAG		(1 << 7)
+#define I2C_RXNE_FLAG		(1 << 6)
+#define I2C_SB				(1 << 0)
+#define I2C_ADDR			(1 << 1)
+#define I2C_BTF				(1 << 2)
+#define I2C_ADD10			(1 << 3)
+#define I2C_STOPF			(1 << 4)
+#define I2C_BERR			(1 << 8)
+#define I2C_ARLO			(1 << 9)
+#define I2C_AF				(1 << 10)
+#define I2C_OVR				(1 << 11)
+#define I2C_TIMEOUT			(1 << 14)
+
+//I2C state
+#define READY				0
+#define RXBUSY				1
+#define TXBUSY				2
+
+//application events
+#define I2C_EV_TX_CMPLT		0
+#define I2C_EV_STOP			1
+#define I2C_EV_DATA_REQ		2
+#define I2C_EV_RX_CMPLT    	3
+
+#define I2C_DISABLE_SR  	RESET
+#define I2C_ENABLE_SR   	SET
+
+#define I2C_ERROR_BERR  3
+#define I2C_ERROR_ARLO  4
+#define I2C_ERROR_AF    5
+#define I2C_ERROR_OVR   6
+#define I2C_ERROR_TIMEOUT 7
+
+#define I2C_SR1_AF		10
+#define I2C_SR1_OVR		11
+#define I2C_SR1_TIMEOUT	14
 
 
-
-
-
-//handler structure for a GPIO pin
 typedef struct
 {
-	//pointer to hold the base address for the GPIO peripheral
-	GPIO_RegDef_t *pGPIOx;
-	GPIO_PinConfig_t GPIO_PinConfig;
+	I2C_RegDef_t *pI2Cx;
+	I2C_Config_t I2C_Config;
+	uint8_t *pTxBuffer;   	//to store the app. Tx buffer address
+	uint8_t *pRxBuffer;		//to store the app. Rx Buffewr address
+	uint32_t TxLen;			//to store Tx len
+	uint32_t RxLen;			//to store Rx len
+	uint8_t TxRxState;		//to stoe communicaton state
+	uint8_t DevAddr;		//to store slave/device address
+	uint32_t RxSize;		//to store Rx size
+	uint8_t Sr;   			//to store repeated start value
 
-}GPIO_Handler_t;
+}I2C_Handle_t;
 
+void I2C_PeriClockControl(I2C_RegDef_t *pI2Cx, uint8_t EnorDi);
 
-#define FALLEDGE		4
-#define RISEEDGE		5
-#define RFT				6
+void I2C_init(I2C_Handle_t *pI2CHandle);
+void I2C_DeInit(I2C_RegDef_t *pI2Cx);
 
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer, uint32_t Len, uint8_t SlaveAddr);
+void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, uint32_t Len, uint8_t SlaveAddr);
 
-#define PUSHPULL		0
-#define OPENDRAIN		1
+uint8_t I2C_MasterSendDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer, uint32_t Len, uint8_t SlaveAddr, uint8_t Sr);
+uint8_t I2C_MasterReceiveDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, uint32_t Len, uint8_t SlaveAddr, uint8_t Sr);
 
+void I2C_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi);
+void I2C_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
+void I2C_EV_IRQHandling(I2C_Handle_t *pI2CHandle);
+void I2C_ER_IRQHandling(I2C_Handle_t *pI2CHandle);
 
-#define LOW				0
-#define MEDIUM			1
-#define FAST			2
-#define SPEEDHIGH			3
+void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EnorDi);
+uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint32_t FlagName);
 
-#define NOPUPD			0
-#define PULLUP			1
-#define PULLDOWN		2
+void I2C_ManageAcking(I2C_RegDef_t *pI2Cx, uint8_t EnorDi);
 
-#define AF0				0
-#define AF1				1
-#define AF2				2
-#define AF3				3
-#define AF4				4
-#define AF5				5
-#define AF6				6
-#define AF7				7
-#define AF8				8
-#define AF9				9
-#define AF10			10
-#define AF11			11
-#define AF12			12
-#define AF13			13
-#define AF14			14
-#define AF15			15
+void I2C_ApplicationEventCallback(I2C_Handle_t *pI2CHandle, uint8_t AppEv);
 
+void I2C_CloseReceiveData(I2C_Handle_t *pI2CHandle);
+void I2C_CloseSendData(I2C_Handle_t *pI2CHandle);
 
-//prototypes for API supported by this driver
+void I2C_GenerateStopCondition(I2C_RegDef_t *pI2Cx);
 
 
-/*******
- *
- * @fn				-GPIO_PLCK_Control
- *
- * @breif			-This function enables or disables the peripheral clock for the given gpio port
- *
- * @param			-base address of the gpio peripheral
- * @param			-enable or disable the clock
- * @param			-
- *
- * @return			-none
- *
- * @note			-none
- */
-void GPIO_PLCK_Control(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
-{
-	if(EnorDi == ENABLE)
-	{
-		if(pGPIOx == GPIOA)
-		{
-			GPIOA_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOB)
-		{
-			GPIOB_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOC)
-		{
-			GPIOC_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOD)
-		{
-			GPIOD_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOE)
-		{
-			GPIOE_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOF)
-		{
-			GPIOF_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOG)
-		{
-			GPIOG_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOH)
-		{
-			GPIOH_PCLK_EN();
-		}
-		else if(pGPIOx == GPIOI)
-		{
-			GPIOI_PCLK_EN();
-		}
-	}
-	else
-	{
-		if(pGPIOx == GPIOA)
-			{
-				GPIOA_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOB)
-			{
-				GPIOB_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOC)
-			{
-				GPIOC_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOD)
-			{
-				GPIOD_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOE)
-			{
-				GPIOE_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOF)
-			{
-				GPIOF_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOG)
-			{
-				GPIOG_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOH)
-			{
-				GPIOH_PCLK_DI();
-			}
-			else if(pGPIOx == GPIOI)
-			{
-				GPIOI_PCLK_DI();
-			}
-	}
-}
-
-
-/*******
- *
- * @fn				-GPIO_Init
- *
- * @breif			-This function configures the all the SETTINGS peripheral registers for the GPIO pin
- *
- * @param			-base address of the GPIO port
- * @param			-
- * @param			-
- *
- * @return			-none
- *
- * @note			-Wrote this code differently than the instructor, also made some corrections to his code
- */
-void GPIO_Init(GPIO_Handler_t *pGPIOHandle)
-{
-	 uint32_t temp=0; //temp. register
-
-		 //enable the peripheral clock
-
-	 	 GPIO_PLCK_Control(pGPIOHandle->pGPIOx, ENABLE);
-
-		//1 . configure the mode of gpio pin
-
-		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= ANALOG)
-		{
-			//the non interrupt mode
-			temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber ) );
-			pGPIOHandle->pGPIOx->MODER &= ~( 0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
-			pGPIOHandle->pGPIOx->MODER |= temp; //setting
-
-		}else
-		{
-			//this part will code later . ( interrupt mode)
-			if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode ==FALLEDGE )
-			{
-				//1. configure the FTSR
-				EXTI->FTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-				//Clear the corresponding RTSR bit
-				EXTI->RTSR &= ~( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-
-			}else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode ==RISEEDGE )
-			{
-				//1 . configure the RTSR
-				EXTI->RTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-				//Clear the corresponding RTSR bit
-				EXTI->FTSR &= ~( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-
-			}else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == RFT )
-			{
-				//1. configure both FTSR and RTSR
-				EXTI->RTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-				//Clear the corresponding RTSR bit
-				EXTI->FTSR |= ( 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
-			}
-
-			//2. configure the GPIO port selection in SYSCFG_EXTICR
-			uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4 ;
-			uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
-			uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);
-			SYSCFG_PCLK_EN();
-			SYSCFG->EXTICR[temp1] = portcode << ( temp2 * 4);
-
-			//3 . enable the exti interrupt delivery using IMR
-			EXTI->IMR |= 1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber;
-		}
-
-		//2. configure the speed
-		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
-		pGPIOHandle->pGPIOx->OSPEEDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
-		pGPIOHandle->pGPIOx->OSPEEDR |= temp;
-
-		//3. configure the pupd settings
-		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_pinPuPdControl << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber) );
-		pGPIOHandle->pGPIOx->PUPDR &= ~( 0x3 << ( 2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clearing
-		pGPIOHandle->pGPIOx->PUPDR |= temp;
-
-
-		//4. configure the optype
-		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber );
-		pGPIOHandle->pGPIOx->OTYPER &= ~( 0x1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //clearing
-		pGPIOHandle->pGPIOx->OTYPER |= temp;
-
-		//5. configure the alt functionality
-		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == ALTFUNC)
-		{
-			//configure the alt function registers.
-			uint8_t temp1, temp2;
-
-			temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;
-			temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber  % 8;
-			pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << ( 4 * temp2 ) ); //clearing
-			pGPIOHandle->pGPIOx->AFR[temp1] |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * temp2 ) );
-		}
-}
-
-
-/*******
- *
- * @fn				-GPIO_GPIO_DeInit
- *
- * @breif			-This function resets the peripheral
- *
- * @param			-base address of the gpio peripheral
- * @param			-
- * @param			-
- *
- * @return			-none
- *
- * @note			-none
- */
-void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
-{
-	if(pGPIOx == GPIOA)
-			{
-				GPIOA_REG_RESET();
-			}
-			else if(pGPIOx == GPIOB)
-			{
-				GPIOB_REG_RESET();
-			}
-			else if(pGPIOx == GPIOC)
-			{
-				GPIOC_REG_RESET();
-			}
-			else if(pGPIOx == GPIOD)
-			{
-				GPIOD_REG_RESET();
-			}
-			else if(pGPIOx == GPIOE)
-			{
-				GPIOE_REG_RESET();
-			}
-			else if(pGPIOx == GPIOF)
-			{
-				GPIOF_REG_RESET();
-			}
-			else if(pGPIOx == GPIOG)
-			{
-				GPIOG_REG_RESET();
-			}
-			else if(pGPIOx == GPIOH)
-			{
-				GPIOH_REG_RESET();
-			}
-			else if(pGPIOx == GPIOI)
-			{
-				GPIOI_REG_RESET();
-			}
-}
-
-
-/*******
- *
- * @fn				-GPIO_ReadFromInputPin
- *
- * @breif			-Read the pin number and the corresponding bit register
- *
- * @param			-base address of the gpio peripheral
- * @param			-the pin you want to read from
- * @param			-
- *
- * @return			- 0 or 1
- *
- * @note			-none
- */
-uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
-{
-	uint8_t value;
-	value = (uint8_t)((pGPIOx->IDR >> PinNumber) & (0x00000001));
-	return value;
-}
-
-/*******
- *
- * @fn				-GPIO_ReadFromInputPort
- *
- * @breif			-Read all the inputs on a port
- *
- * @param			-base address of the gpio peripheral
- * @param			-
- * @param			-
- *
- * @return			- 16 bit binary
- *
- * @note			-none
- */
-uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx)
-{
-	uint16_t value;
-
-	value = (uint16_t)(pGPIOx->IDR);
-	return value;
-}
-
-
-void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint16_t Value)
-{
-	if(Value == SET)
-	{
-		pGPIOx->ODR |= (1 << PinNumber);
-	}
-	else
-	{
-		pGPIOx->ODR &= ~(1 << PinNumber);
-	}
-}
-
-
-void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
-{
-	pGPIOx->ODR = Value;
-}
-
-
-void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
-{
-	pGPIOx->ODR ^= (1 << PinNumber);
-}
-
-
-
-void GPIO_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi)
-{
-	if(EnorDi == ENABLE)
-	{
-		if(IRQNumber <= 31)
-		{
-			//program ISER0 register
-			*NVIC_ISER0 |= (1 << IRQNumber);
-		}
-		else if(IRQNumber > 31 && IRQNumber < 64)
-		{
-			//program ISER1 register
-			*NVIC_ISER1 |= (1 << (IRQNumber%32));
-		}
-		else if(IRQNumber >= 64 && IRQNumber < 96)
-		{
-			//Program ISER2 register
-			*NVIC_ISER2 |= (1 << (IRQNumber%64));
-		}
-	}
-	else
-	{
-		if(IRQNumber <= 31)
-		{
-			//program ICER0 register
-			*NVIC_ICER0 |= (1 << IRQNumber);
-		}
-		else if(IRQNumber > 31 && IRQNumber < 64)
-		{
-			//program ICER1 register
-			*NVIC_ICER1 |= (1 << (IRQNumber%32));
-		}
-		else if(IRQNumber >= 64 && IRQNumber < 96)
-		{
-			//Program ICER2 register
-			*NVIC_ICER2 |= (1 << (IRQNumber%64));
-		}
-	}
-}
-
-void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
-{
-	//fin the ipr register
-	uint8_t iprx = IRQNumber / 4;
-	uint8_t iprx_section = IRQNumber % 4;
-
-	uint8_t shift_amount = (8 * iprx_section) + (8- NO_PR_BITS_IMPLEMENTED);
-	*(NVIC_PR_BASE_ADDR + iprx) |= (IRQPriority << shift_amount);
-}
-
-void GPIO_IRQHandling(uint8_t PinNumber)
-{
-	//clear the exti pr register
-	if(EXTI->PR & (1 << PinNumber))
-	{
-		//clear pending reggister bit
-		EXTI->PR |= (1 << PinNumber);
-	}
-}
-
-#endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */
+#endif /* INC_STM32F407XX_I2C_DRIVER_H_ */
