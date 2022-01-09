@@ -67,6 +67,7 @@ Processor specific details
 
 
 //APB1 peripheral addresses
+#define DAC_BASE			((APB1PERIPH_BASE)+(0x7400))
 #define I2C1_BASE			((APB1PERIPH_BASE)+(0x5400))
 #define I2C2_BASE			((APB1PERIPH_BASE)+(0x5800))
 #define I2C3_BASE			((APB1PERIPH_BASE)+(0x5C00))
@@ -371,6 +372,26 @@ typedef struct
 
 #define TIM1			((AdvTIM_RegDef_t*)TIM1_BASE)
 #define TIM8			((AdvTIM_RegDef_t*)TIM8_BASE)
+
+typedef struct
+{
+	uint32_t CR;
+	uint32_t SWTTRIGR;
+	uint32_t DHR12R1;
+	uint32_t DHR12L1;
+	uint32_t DHR8R1;
+	uint32_t DHR12R2;
+	uint32_t DHR12L2;
+	uint32_t DHR8R2;
+	uint32_t DHR12RD;
+	uint32_t DHR12LD;
+	uint32_t DHR8RD;
+	uint32_t DOR1;
+	uint32_t DOR2;
+	uint32_t SR;
+}DAC_RegDef_t;
+
+#define DAC				((DAC_RegDef_t*)DAC_BASE)
 
 //IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
