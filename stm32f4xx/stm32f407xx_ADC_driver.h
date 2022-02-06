@@ -41,8 +41,18 @@ typedef struct
 
 }ADC_Handler_t;
 
+void delay2(void);
+
 void ADC_Clk_EnorDi(ADC_RegDef_t *pADCx, uint8_t EnorDi);
 
 void ADC_Init(ADC_RegDef_t *pADCHandle);
+
+void ADC_Init_LR(ADC_RegDef_t *pADCHandle);
+void ADC_Init_UD(ADC_RegDef_t *pADCHandle);
+
+uint8_t LR_Inc_Flg;
+uint8_t UD_Inc_Flg;
+uint8_t LR_Dec_Flg;
+uint8_t UD_Dec_Flg;
 
 #endif /* INC_STM32F407XX_ADC_DRIVER_H_ */
