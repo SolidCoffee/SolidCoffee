@@ -5,92 +5,77 @@
 #include<stdio.h>
 #include<string.h>
 
-void delay2(void)
-{
-	for(uint32_t i = 0 ; i < 10000000 ; i ++);
-}
-
 void delay(void)
 {
-	for(uint32_t i = 0 ; i < 80000; i ++);
+	for(uint32_t i = 0 ; i < 10000; i ++);
 }
 
 uint32_t x=10;
 uint32_t y=10;
 
-void ADC_Init_LR(ADC_RegDef_t *pADCHandle)
+void ServoHandle(void)
 {
-	//Enable ADC
-	pADCHandle->CR2 |= (1 << 0);
-
-	//continous conversion setting
-	pADCHandle->CR2 |= (1 << 1);
-
-	//clearing channel
-	pADCHandle->SQR3 &= ~(31 << 0);
-
-	//Selecting channel
-	pADCHandle->SQR3 |= (1 << 0);
-
-	//cycle edit
-	pADCHandle->SMPR2 |= (0 << 4);
-
-	//resolution
-	pADCHandle->CR1 |= (1 << 24);
-
-	//start conversion of regular channels
-	pADCHandle->CR2 |= (1 << 30);
-
-	if(pADCHandle->DR > 600)
+	if(UD_Inc_Flg)
 	{
 		x++;
-		ServoAngle(TIM4, x, 2);
+		if(x >= 180)
+		{
+			x=180;
+		}
+		else if(x <= 10)
+		{
+			x=10;
+		}
+		ServoAngle(TIM4, x, MID);
 	}
-	else if(pADCHandle->DR < 500)
+	else if(UD_Dec_Flg)
 	{
 		x--;
-		ServoAngle(TIM4, x, 2);
+		if(x >= 180)
+		{
+			x=180;
+		}
+		else if(x <= 10)
+		{
+			x=10;
+		}
+		ServoAngle(TIM4, x, MID);
 	}
-	//Disable ADC
-	pADCHandle->CR2 &= ~(1 << 0);
-}
+	UD_Inc_Flg=0;
+	UD_Dec_Flg=0;
 
-void ADC_Init_UD(ADC_RegDef_t *pADCHandle)
-{
-	//Enable ADC
-	pADCHandle->CR2 |= (1 << 0);
-
-	//continous conversion setting
-	pADCHandle->CR2 |= (1 << 1);
-
-	//clearing channel
-	pADCHandle->SQR3 &= ~(31 << 0);
-
-	//Selecting channel
-	pADCHandle->SQR3 |= (3 << 0);
-
-	//cycle edit
-	pADCHandle->SMPR2 |= (0 << 4);
-
-	//resolution
-	pADCHandle->CR1 |= (1 << 24);
-
-	//start conversion of regular channels
-	pADCHandle->CR2 |= (1 << 30);
-
-	if(pADCHandle->DR > 600)
+	if(LR_Inc_Flg)
 	{
 		y++;
-		ServoAngle(TIM4, y, 1);
+		if(y >= 180)
+		{
+			y=180;
+		}
+		else if(y <= 10)
+		{
+			y=10;
+		}
+		ServoAngle(TIM4, y, BOTTOM);
 	}
-	else if(pADCHandle->DR < 500)
+	else if(LR_Dec_Flg)
 	{
 		y--;
-		ServoAngle(TIM4, y, 1);
+		if(y >= 180)
+		{
+			y=180;
+		}
+		else if(y <= 10)
+		{
+			y=10;
+		}
+		ServoAngle(TIM4, y, BOTTOM);
 	}
-	//Disable ADC
-	pADCHandle->CR2 &= ~(1 << 0);
+	LR_Inc_Flg=0;
+	LR_Dec_Flg=0;
+
+	//delay();
 }
+
 
 void GPIOInits(void)
 {
@@ -196,13 +181,15 @@ int main(void)
 	//delay2();
 	while(1)
 	{
-		//ADC_Init_LR(ADC1);
+		ADC_Init_LR(ADC1);
 
-		///ADC_Init_UD(ADC1);
+		ADC_Init_UD(ADC1);
 
-		//ServoAngle(TIM4, 100, 3);
-		//ServoAngle(TIM4, 100, 1);
-		//ServoAngle(TIM4, 180, 2);
+		ServoHandle();
+
+		//ServoAngle(TIM4, 100, TOP);
+		//ServoAngle(TIM4, 100, MID);
+		//ServoAngle(TIM4, 80, BOTTOM);
 	}
 
 
