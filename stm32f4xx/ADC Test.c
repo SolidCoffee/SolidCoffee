@@ -105,22 +105,6 @@ void GPIOInits(void)
 	GPIO_Init(&ADCPins);
 }
 
-void XTurn(ADC_RegDef_t *pADCHandle, uint8_t inx)
-{
-	//Selecting channel
-	pADCHandle->SQR3 |= (inx << 0);
-
-	if(pADCHandle->DR > 600)
-	{
-		i++;
-		ServoAngle(TIM4, i, 3);
-	}
-	else if(pADCHandle->DR < 500)
-	{
-		i--;
-		ServoAngle(TIM4, i, 3);
-	}
-}
 
 int main(void)
 {
@@ -136,3 +120,4 @@ int main(void)
 		ADC_Init_UD(ADC1);  //up down
 	}
 }
+
