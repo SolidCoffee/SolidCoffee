@@ -38,6 +38,11 @@ typedef struct
 //macros for rest position
 #define DISABLE		0
 
+//motors
+#define BOTTOM			2
+#define MID			1
+#define TOP			3
+
 
 
 
