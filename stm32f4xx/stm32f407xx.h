@@ -43,6 +43,10 @@ Processor specific details
 #define AHB1PERIPH_BASE		0x40020000U
 #define AHB2PERIPH_BASE		0x50000000U
 
+//ADC Offset
+#define ADC_2_OFFSET		0x100U
+#define ADC_3_OFFSET		0x200U
+
 //AHB1 peripheral addresses
 #define GPIOA_BASE			((AHB1PERIPH_BASE)+(0x00))
 #define GPIOB_BASE			((AHB1PERIPH_BASE)+(0x0400))
@@ -99,6 +103,9 @@ Processor specific details
 #define TIM9_BASE			((APB2PERIPH_BASE)+(0X4000))
 #define TIM10_BASE			((APB2PERIPH_BASE)+(0X4400))
 #define TIM11_BASE			((APB2PERIPH_BASE)+(0X4800))
+#define ADC1_BASE			((APB2PERIPH_BASE)+(0x2000))
+#define ADC2_BASE			((ADC1_BASE)+ADC_2_OFFSET)
+#define ADC3_BASE			((ADC1_BASE)+ADC_3_OFFSET)
 
 typedef struct
 {
@@ -393,6 +400,39 @@ typedef struct
 
 #define DAC				((DAC_RegDef_t*)DAC_BASE)
 
+typedef struct
+{
+	uint32_t SR;
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t SMPR1;
+	uint32_t SMPR2;
+	uint32_t JOFR1;
+	uint32_t JOFR2;
+	uint32_t JOFR3;
+	uint32_t JOFR4;
+	uint32_t HTR;
+	uint32_t LTR;
+	uint32_t SQR1;
+	uint32_t SQR2;
+	uint32_t SQR3;
+	uint32_t JSQR;
+	uint32_t JDR1;
+	uint32_t JDR2;
+	uint32_t JDR3;
+	uint32_t JDR4;
+	uint32_t DR;
+	uint32_t CSR;
+	uint32_t CCR;
+	uint32_t CDR;
+
+}ADC_RegDef_t;
+
+#define ADC1		((ADC_RegDef_t*)ADC1_BASE)
+#define ADC2		((ADC_RegDef_t*)ADC2_BASE)
+#define ADC3		((ADC_RegDef_t*)ADC3_BASE)
+
+
 //IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
 #define IRQ_NO_EXTI1		7
@@ -461,6 +501,11 @@ typedef struct
 #define TIM13_CLK_EN()	(RCC->APB1ENR |= (1 << 13))
 #define TIM14_CLK_EN()	(RCC->APB1ENR |= (1 << 14))
 
+//ADC clock enable macros
+#define ADC1_CLK_EN()	(RCC->APB2ENR |= (1 << 8))
+#define ADC2_CLK_EN()	(RCC->APB2ENR |= (1 << 9))
+#define ADC3_CLK_EN()	(RCC->APB2ENR |= (1 << 10))
+
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
 #define GPIOB_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 1))
@@ -498,6 +543,11 @@ typedef struct
 #define TIM12_CLK_DI()	(RCC->APB1ENR &= ~(1 << 12))
 #define TIM13_CLK_DI()	(RCC->APB1ENR &= ~(1 << 13))
 #define TIM14_CLK_DI()	(RCC->APB1ENR &= ~(1 << 14))
+
+//ADC clock disable macros
+#define ADC1_CLK_DI()	(RCC->APB2ENR &= ~(1 << 8))
+#define ADC2_CLK_DI()	(RCC->APB2ENR &= ~(1 << 9))
+#define ADC3_CLK_DI()	(RCC->APB2ENR &= ~(1 << 10))
 
 
 //GPIO reset maco's
