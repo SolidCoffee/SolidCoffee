@@ -591,6 +591,7 @@ typedef struct
 #define OUTPUT			1
 #define ALTFUNC			2
 #define ANALOG			3
+#define INTERRUPT		4
 
 //bit positoin macros for SPI
 #define CPHA			0
