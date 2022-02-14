@@ -1,10 +1,3 @@
-/*
- * stm32f407xx_ADC_driver.h
- *
- *  Created on: Feb 5, 2022
- *      Author: mmazzi
- */
-
 #ifndef INC_STM32F407XX_ADC_DRIVER_H_
 #define INC_STM32F407XX_ADC_DRIVER_H_
 
@@ -54,5 +47,6 @@ uint8_t LR_Inc_Flg;
 uint8_t UD_Inc_Flg;
 uint8_t LR_Dec_Flg;
 uint8_t UD_Dec_Flg;
+uint8_t Wrist_flg;
 
 #endif /* INC_STM32F407XX_ADC_DRIVER_H_ */
