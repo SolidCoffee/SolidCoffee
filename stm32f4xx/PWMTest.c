@@ -7,73 +7,109 @@
 
 void delay(void)
 {
-	for(uint32_t i = 0 ; i < 10000; i ++);
+	for(uint32_t i = 0 ; i < 100000; i ++);
 }
 
 uint32_t x=10;
 uint32_t y=10;
+uint32_t j=10;
+uint32_t checker=0;
 
 void ServoHandle(void)
 {
-	if(UD_Inc_Flg)
+	if(Wrist_flg==0)
 	{
-		x++;
-		if(x >= 180)
+		if(UD_Inc_Flg)
 		{
-			x=180;
+			x++;
+			if(x >= 180)
+			{
+				x=180;
+			}
+			else if(x <= 10)
+			{
+				x=10;
+			}
+			ServoAngle(TIM4, x, MID);
 		}
-		else if(x <= 10)
+		else if(UD_Dec_Flg)
 		{
-			x=10;
+			x--;
+			if(x >= 180)
+			{
+				x=180;
+			}
+			else if(x <= 10)
+			{
+				x=10;
+			}
+			ServoAngle(TIM4, x, MID);
 		}
-		ServoAngle(TIM4, x, MID);
-	}
-	else if(UD_Dec_Flg)
-	{
-		x--;
-		if(x >= 180)
-		{
-			x=180;
-		}
-		else if(x <= 10)
-		{
-			x=10;
-		}
-		ServoAngle(TIM4, x, MID);
-	}
-	UD_Inc_Flg=0;
-	UD_Dec_Flg=0;
+		UD_Inc_Flg=0;
+		UD_Dec_Flg=0;
 
-	if(LR_Inc_Flg)
-	{
-		y++;
-		if(y >= 180)
+		if(LR_Inc_Flg)
 		{
-			y=180;
+			y++;
+			if(y >= 180)
+			{
+				y=180;
+			}
+			else if(y <= 10)
+			{
+				y=10;
+			}
+			ServoAngle(TIM4, y, BOTTOM);
 		}
-		else if(y <= 10)
+		else if(LR_Dec_Flg)
 		{
-			y=10;
+			y--;
+			if(y >= 180)
+			{
+				y=180;
+			}
+			else if(y <= 10)
+			{
+				y=10;
+			}
+			ServoAngle(TIM4, y, BOTTOM);
 		}
-		ServoAngle(TIM4, y, BOTTOM);
-	}
-	else if(LR_Dec_Flg)
-	{
-		y--;
-		if(y >= 180)
-		{
-			y=180;
-		}
-		else if(y <= 10)
-		{
-			y=10;
-		}
-		ServoAngle(TIM4, y, BOTTOM);
-	}
-	LR_Inc_Flg=0;
-	LR_Dec_Flg=0;
+		LR_Inc_Flg=0;
+		LR_Dec_Flg=0;
 
-	//delay();
+	}
+	else
+	{
+		if(UD_Inc_Flg)
+		{
+			j++;
+			if(j >= 180)
+			{
+				j=180;
+			}
+			else if(j <= 10)
+			{
+				j=10;
+			}
+			ServoAngle(TIM4, j, TOP);
+		}
+		else if(UD_Dec_Flg)
+		{
+			j--;
+			if(j >= 180)
+			{
+				j=180;
+			}
+			else if(j <= 10)
+			{
+				j=10;
+			}
+			ServoAngle(TIM4, j, TOP);
+		}
+		UD_Inc_Flg=0;
+		UD_Dec_Flg=0;
+	}
+
 }
 
 
@@ -157,15 +193,19 @@ void GPIO_ButtonInit()
 {
 	GPIO_Handler_t GPIOBtn;
 
-	GPIOBtn.pGPIOx = GPIOA;
-	GPIOBtn.GPIO_PinConfig.GPIO_PinNumber = 0;
-	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = INPUT;
-	GPIOBtn.GPIO_PinConfig.GPIO_PinSpeed = SPEEDHIGH;
-	GPIOBtn.GPIO_PinConfig.GPIO_pinPuPdControl =NOPUPD;
+	GPIOBtn.pGPIOx = GPIOD;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinNumber = 5;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = FALLEDGE;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinSpeed = LOW;
+	GPIOBtn.GPIO_PinConfig.GPIO_pinPuPdControl =PULLUP;
 
 	GPIO_Init(&GPIOBtn);
 
+	//IRQ config
+	GPIO_IRQPriorityConfig(IRQ_NO_EXTI9_5,1);
+	GPIO_IRQITConfig(IRQ_NO_EXTI9_5,ENABLE);
 }
+
 
 int main(void)
 {
@@ -186,6 +226,7 @@ int main(void)
 		ADC_Init_UD(ADC1);
 
 		ServoHandle();
+
 
 		//ServoAngle(TIM4, 100, TOP);
 		//ServoAngle(TIM4, 100, MID);
@@ -226,6 +267,31 @@ int main(void)
 
 
 
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+	GPIO_IRQHandling(5);
+
+	checker++;
+
+	if(checker==3)
+	{
+		checker=2;
+	}
+
+	if(checker==2)
+	{
+		if(Wrist_flg)
+		{
+			Wrist_flg =0;
+		}
+		else
+		{
+			Wrist_flg=1;
+		}
+		checker=0;
+	}
 }
 
 /*while(1)
