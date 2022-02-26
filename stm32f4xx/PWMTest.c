@@ -133,12 +133,10 @@ void GPIOInits(void)
 	GPIO_Init(&ADCPins);
 
 	ADCPins.GPIO_PinConfig.GPIO_PinNumber = 5;
-	ADCPins.GPIO_PinConfig.GPIO_PinMode = OUTPUT;
 	GPIO_Init(&ADCPins);
 
-	ADCPins.GPIO_PinConfig.GPIO_PinNumber = 7;
-	ADCPins.GPIO_PinConfig.GPIO_PinMode = OUTPUT;
-	GPIO_Init(&ADCPins);
+	//ADCPins.GPIO_PinConfig.GPIO_PinNumber = 7;
+	//GPIO_Init(&ADCPins);
 }
 
 void PWM_GPIOInits(void)
@@ -224,6 +222,8 @@ int main(void)
 		ADC_Init_LR(ADC1);
 
 		ADC_Init_UD(ADC1);
+
+		//ADC_Wrist(ADC1);
 
 		ServoHandle();
 
