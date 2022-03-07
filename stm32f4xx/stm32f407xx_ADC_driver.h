@@ -5,6 +5,13 @@
  *      Author: mmazzi
  */
 
+/*
+ * stm32f407xx_ADC_driver.h
+ *
+ *  Created on: Feb 5, 2022
+ *      Author: mmazzi
+ */
+
 #ifndef INC_STM32F407XX_ADC_DRIVER_H_
 #define INC_STM32F407XX_ADC_DRIVER_H_
 
@@ -54,9 +61,12 @@ void ADC_Init(ADC_RegDef_t *pADCHandle);
 
 void ADC_Init_LR(ADC_RegDef_t *pADCHandle);
 void ADC_Init_UD(ADC_RegDef_t *pADCHandle);
+void ADC_Top(ADC_RegDef_t *pADCHandle);
+void ADC_Hand(ADC_RegDef_t *pADCHandle);
 void ADC_Wrist(ADC_RegDef_t *pADCHandle);
+uint32_t ADC_Read(ADC_RegDef_t *pADCHandle, uint8_t Channel);
 
-uint32_t EdgeCondition(uint32_t val);
+uint32_t EdgeCondition(uint32_t val, uint8_t Hand_or_No);
 
 uint8_t LR_Inc_Flg;
 uint8_t UD_Inc_Flg;
@@ -64,5 +74,11 @@ uint8_t LR_Dec_Flg;
 uint8_t UD_Dec_Flg;
 uint8_t Wrist_Inc_Flg;
 uint8_t Wrist_Dec_Flg;
+uint8_t Hand_Inc_Flg;
+uint8_t Hand_Dec_Flg;
+uint8_t Top_Inc_Flg;
+uint8_t Top_Dec_Flg;
+#define NOTHAND		1
+#define HAND		2
 
 #endif /* INC_STM32F407XX_ADC_DRIVER_H_ */
