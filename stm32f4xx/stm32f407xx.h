@@ -506,6 +506,9 @@ typedef struct
 #define ADC2_CLK_EN()	(RCC->APB2ENR |= (1 << 9))
 #define ADC3_CLK_EN()	(RCC->APB2ENR |= (1 << 10))
 
+//DAC clock enable macros
+#define DAC_CLK_EN()	(RCC->APB1ENR |= (1 << 29))
+
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
 #define GPIOB_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 1))
@@ -549,6 +552,12 @@ typedef struct
 #define ADC2_CLK_DI()	(RCC->APB2ENR &= ~(1 << 9))
 #define ADC3_CLK_DI()	(RCC->APB2ENR &= ~(1 << 10))
 
+//DAC clock disable macros
+#define DAC_CLK_DI()	(RCC->APB1ENR &= ~(1 << 29))
+
+//DAC clock reset macros
+//#define DAC_CLK_EN()
+
 
 //GPIO reset maco's
 #define GPIOA_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 <<  0)); }while(0)
@@ -586,6 +595,7 @@ typedef struct
 #define DISABLE			0
 #define SET				ENABLE
 #define RESET			DISABLE
+#define HIGH			1
 
 #define INPUT			0
 #define OUTPUT			1
