@@ -5,13 +5,6 @@
  *      Author: mmazzi
  */
 
-/*
- * stm32f407xx_ADC_driver.h
- *
- *  Created on: Feb 5, 2022
- *      Author: mmazzi
- */
-
 #ifndef INC_STM32F407XX_ADC_DRIVER_H_
 #define INC_STM32F407XX_ADC_DRIVER_H_
 
