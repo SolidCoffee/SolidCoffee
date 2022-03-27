@@ -3,6 +3,8 @@
 
 #include<stdint.h>
 #include<stddef.h>
+#include<stdio.h>
+#include<string.h>
 
 #define __vo volatile
 
@@ -612,5 +614,13 @@ typedef struct
 
 #define BUSY			1
 #define FREE			0
+
+#include "stm32f407xx_gpio_driver.h"
+#include "stm32f407xx_timer.h"
+#include "stm32f407xx_ADC_driver.h"
+#include "stm32f407xx_Stepper_driver.h"
+#include "stm32f407xx_I2C_driver.h"
+#include "stm32f407xx_spi_driver.h"
+#include "stm32f407xx_DAC_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */
