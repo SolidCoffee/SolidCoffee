@@ -39,9 +39,10 @@ typedef struct
 #define DISABLE		0
 
 //motors
-#define BOTTOM			2
+#define BOTTOM		2
 #define MID			1
 #define TOP			3
+#define GRIP		4
 
 
 
