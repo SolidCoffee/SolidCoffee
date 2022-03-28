@@ -7,21 +7,18 @@
 
 
 #include "stm32f407xx.h"
-#include "stm32f407xx_gpio_driver.h"
-#include "stm32f407xx_timer.h"
-#include "stm32f407xx_ADC_driver.h"
-#include<stdio.h>
-#include<string.h>
 
-void delay(void)
-{
-	for(uint32_t i = 0 ; i < 100000; i ++);
-}
 
 uint32_t x=10;
 uint32_t y=10;
 uint32_t j=10;
+uint32_t s=30;
 uint32_t checker=0;
+
+void StartUpDelay(void)
+{
+	for(uint32_t i =0; i<10000;i++);
+}
 
 void ServoHandle(void)
 {
@@ -29,13 +26,13 @@ void ServoHandle(void)
 	if(UD_Inc_Flg)
 	{
 		x++;
-		x=EdgeCondition(x);
+		x=EdgeCondition(x,NOTHAND);
 		ServoAngle(TIM4, x, MID);
 	}
 	else if(UD_Dec_Flg)
 	{
 		x--;
-		x=EdgeCondition(x);
+		x=EdgeCondition(x,NOTHAND);
 		ServoAngle(TIM4, x, MID);
 	}
 	UD_Inc_Flg=0; UD_Dec_Flg=0;
@@ -43,31 +40,42 @@ void ServoHandle(void)
 	if(LR_Inc_Flg)
 	{
 		y++;
-		y=EdgeCondition(y);
+		y=EdgeCondition(y,NOTHAND);
 		ServoAngle(TIM4, y, BOTTOM);
 	}
 	else if(LR_Dec_Flg)
 	{
 		y--;
-		y=EdgeCondition(y);
+		y=EdgeCondition(y,NOTHAND);
 		ServoAngle(TIM4, y, BOTTOM);
 	}
 	LR_Inc_Flg=0; LR_Dec_Flg=0;
 
-	if(Wrist_Inc_Flg)
+	if(Top_Inc_Flg)
 	{
 		j++;
-		j=EdgeCondition(j);
+		j=EdgeCondition(j,NOTHAND);
 		ServoAngle(TIM4, j,TOP);
+	}
+	else if(Top_Dec_Flg)
+	{
+		j--;
+		j=EdgeCondition(j,NOTHAND);
+		ServoAngle(TIM4, j,TOP);
+	}
+	Top_Inc_Flg=0; Top_Dec_Flg=0;
+
+	if(Wrist_Inc_Flg)
+	{
+		StepperStepsInc(1);
 	}
 	else if(Wrist_Dec_Flg)
 	{
-		j--;
-		j=EdgeCondition(j);
-		ServoAngle(TIM4, j,TOP);
+		StepperStepsDec(1);
 	}
 	Wrist_Inc_Flg=0; Wrist_Dec_Flg=0;
 }
+
 
 void GPIOInits(void)
 {
@@ -91,8 +99,8 @@ void GPIOInits(void)
 	ADCPins.GPIO_PinConfig.GPIO_PinNumber = 5;
 	GPIO_Init(&ADCPins);
 
-	//ADCPins.GPIO_PinConfig.GPIO_PinNumber = 7;
-	//GPIO_Init(&ADCPins);
+	ADCPins.GPIO_PinConfig.GPIO_PinNumber = 7;
+	GPIO_Init(&ADCPins);
 }
 
 void PWM_GPIOInits(void)
@@ -108,14 +116,51 @@ void PWM_GPIOInits(void)
 	PWMPins.GPIO_PinConfig.GPIO_PinSpeed = SPEEDHIGH;  //might need to look into this
 
 	//PWM Pin config
-	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 6;
+	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 6;//mid
 	GPIO_Init(&PWMPins);
 
-	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 7;
+	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 7; //bottom
 	GPIO_Init(&PWMPins);
 
-	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 8;
+	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 8;//top
 	GPIO_Init(&PWMPins);
+
+	PWMPins.GPIO_PinConfig.GPIO_PinNumber = 9;//grip
+	GPIO_Init(&PWMPins);
+}
+
+void Stepper_GPIOInits(void)
+{
+	GPIO_Handler_t StepperPins;
+
+	StepperPins.pGPIOx = GPIOB;
+
+	StepperPins.GPIO_PinConfig.GPIO_PinMode = OUTPUT;
+	StepperPins.GPIO_PinConfig.GPIO_PinAltFunMode = AF0;
+	StepperPins.GPIO_PinConfig.GPIO_PinOPType = PUSHPULL;
+	StepperPins.GPIO_PinConfig.GPIO_pinPuPdControl = PULLDOWN;
+	StepperPins.GPIO_PinConfig.GPIO_PinSpeed = SPEEDHIGH;  //might need to look into this
+
+	//PWM Pin config
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 10; //green=A-
+	GPIO_Init(&StepperPins);
+
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 12; //Black=A+
+	GPIO_Init(&StepperPins);
+
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 14;  //Red=B+
+	GPIO_Init(&StepperPins);
+
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 15; //Blue=B-
+	GPIO_Init(&StepperPins);
+
+	StepperPins.GPIO_PinConfig.GPIO_PinMode = INPUT;
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 11;
+	GPIO_Init(&StepperPins);
+
+	StepperPins.GPIO_PinConfig.GPIO_PinMode = INPUT;
+	StepperPins.GPIO_PinConfig.GPIO_PinNumber = 13;
+	GPIO_Init(&StepperPins);
 }
 
 void PWMTIM(void)
@@ -141,22 +186,76 @@ void PWMTIM(void)
 	TIMPWM.TIM_Config.PWM_Channel = 3;
 
 	PWM2_5_Init(&TIMPWM);
+
+	TIMPWM.TIM_Config.PWM_Channel = 4;
+
+	PWM2_5_Init(&TIMPWM);
 }
 
+void ButtonHandle(void)
+{
+	uint8_t Button_Inc_Val=GPIO_ReadFromInputPin(GPIOB, 11);
+	uint8_t Button_Dec_Val=GPIO_ReadFromInputPin(GPIOB, 13);
+
+	if(Button_Inc_Val && Button_Dec_Val)
+	{
+
+	}
+	else if(Button_Dec_Val)
+	{
+		s--;
+		s=EdgeCondition(s,HAND);
+		ServoAngle(TIM4, s, GRIP);
+	}
+	else if(Button_Inc_Val)
+	{
+		s++;
+		s=EdgeCondition(s,HAND);
+		ServoAngle(TIM4, s, GRIP);
+	}
+
+}
+
+void ServoBegin(void)
+{
+	for(uint32_t i=10; i<=70;i++)
+	{
+		ServoAngle(TIM4, i, MID);
+		ServoAngle(TIM4, i, BOTTOM);
+		ServoAngle(TIM4, i, TOP);
+		ServoAngle(TIM4, i+20, GRIP);
+		StartUpDelay();
+	}
+	for(uint32_t i=70; i>10;i--)
+	{
+		ServoAngle(TIM4, i, MID);
+		ServoAngle(TIM4, i, BOTTOM);
+		ServoAngle(TIM4, i, TOP);
+		ServoAngle(TIM4, i+20, GRIP);
+		StartUpDelay();
+	}
+
+}
 
 int main(void)
 {
 	GPIOInits();
+	Stepper_GPIOInits();
 	ADC_Clk_EnorDi(ADC1, ENABLE);
 	PWM_GPIOInits();
 	TIM2_5_CLKEnable(TIM4, ENABLE); //Enables HSI and TIM3 peripheral clock
 	PWMTIM();
+	ServoBegin();
 
 	while(1)
 	{
 		ADC_Init_LR(ADC1);
 
 		ADC_Init_UD(ADC1);
+
+		ADC_Top(ADC1);
+
+		ButtonHandle();
 
 		ADC_Wrist(ADC1);
 
