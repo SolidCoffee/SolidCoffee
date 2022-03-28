@@ -358,10 +358,9 @@ uint32_t EdgeCondition(uint32_t val, uint8_t Hand_or_No)
 	}
 	else if(Hand_or_No == HAND)
 	{
-		if(val >= 180){val=180;}
-		else if(val <= 10){val=10;}
+		if(val >= 100){val=100;}
+		else if(val <= 30){val=30;}
 	}
 	return val;
 }
-
 
