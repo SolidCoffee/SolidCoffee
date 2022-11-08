@@ -44,6 +44,12 @@ void SineWaveGen(uint8_t Channel);
 void analogDualWrite(uint32_t Val_1, uint32_t Val_2);
 void DualSineWaveGen(void);
 void DualOpposeSineWaveGen(uint32_t offset);
+void BetterDualOpposeSineWaveGen(uint32_t offset);
+void single_checker(void);
+void TimerDualOpposeSineWaveGen(uint32_t offset, uint32_t offset_2, uint32_t phase_shift);
+void TimerDualDACSineWaveGen(uint32_t offset);
+void GPIO_DAC_Inits(void);
+void GPIO_GRD_Inits(void);
 
 
 
