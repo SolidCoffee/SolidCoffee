@@ -622,5 +622,6 @@ typedef struct
 #include "stm32f407xx_I2C_driver.h"
 #include "stm32f407xx_spi_driver.h"
 #include "stm32f407xx_DAC_driver.h"
+#include "stm32f407xx_Basic_Timer_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */
