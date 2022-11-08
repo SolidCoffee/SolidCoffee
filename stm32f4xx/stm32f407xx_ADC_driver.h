@@ -61,16 +61,17 @@ uint32_t ADC_Read(ADC_RegDef_t *pADCHandle, uint8_t Channel);
 
 uint32_t EdgeCondition(uint32_t val, uint8_t Hand_or_No);
 
-uint8_t LR_Inc_Flg;
-uint8_t UD_Inc_Flg;
-uint8_t LR_Dec_Flg;
-uint8_t UD_Dec_Flg;
-uint8_t Wrist_Inc_Flg;
-uint8_t Wrist_Dec_Flg;
-uint8_t Hand_Inc_Flg;
-uint8_t Hand_Dec_Flg;
-uint8_t Top_Inc_Flg;
-uint8_t Top_Dec_Flg;
+__attribute__((__common__)) uint8_t LR_Inc_Flg;
+__attribute__((__common__)) uint8_t UD_Inc_Flg;
+__attribute__((__common__)) uint8_t LR_Dec_Flg;
+__attribute__((__common__)) uint8_t UD_Dec_Flg;
+__attribute__((__common__)) uint8_t Wrist_Inc_Flg;
+__attribute__((__common__)) uint8_t Wrist_Dec_Flg;
+__attribute__((__common__)) uint8_t Hand_Inc_Flg;
+__attribute__((__common__)) uint8_t Hand_Dec_Flg;
+__attribute__((__common__)) uint8_t Top_Inc_Flg;
+__attribute__((__common__)) uint8_t Top_Dec_Flg;
+
 #define NOTHAND		1
 #define HAND		2
 
