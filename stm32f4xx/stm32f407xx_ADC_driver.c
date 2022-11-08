@@ -2,12 +2,12 @@
 
 void delay2(void)
 {
-	for(uint32_t i = 0 ; i < 3000 ; i ++);
+	for(uint32_t i = 0 ; i < 25000 ; i ++);
 }
 
 void delay1(void)
 {
-	for(uint32_t i = 0 ; i < 10000 ; i ++);
+	for(uint32_t i = 0 ; i < 13000 ; i ++);
 }
 
 void ADC_Clk_EnorDi(ADC_RegDef_t *pADCx, uint8_t EnorDi)
