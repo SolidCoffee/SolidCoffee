@@ -595,7 +595,7 @@ typedef struct
 
 #define ENABLE			1
 #define DISABLE			0
-#define SET				ENABLE
+#define SET			ENABLE
 #define RESET			DISABLE
 #define HIGH			1
 
