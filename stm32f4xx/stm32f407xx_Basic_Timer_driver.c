@@ -72,7 +72,7 @@ void SR_clearer(uint32_t Timer)
 
 }
 
-void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
+void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value) //starts timer, and stops code while timer is going to specified value
 {
 	uint32_t clearer_flg=0;
 	pTIMx->ARR = value;
@@ -110,7 +110,7 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 
 }
 
-uint8_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
+uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value) //starts timer, and runs code while timer is going to specified value
 {
 	pTIMx->ARR = value;
 	pTIMx->CR1 |= (1 << 0);
@@ -118,7 +118,6 @@ uint8_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 
 	if(pTIMx == TIM6)
 	{
-		SR_clearer(6);
 		if(TIM6->SR)
 		{
 			Running_timer_counter6++;
@@ -138,3 +137,4 @@ uint8_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 	}
 	return 0;
 }
+
