@@ -62,6 +62,7 @@ void TIM2_5_CLKEnable(TIM2_5_RegDef_t *pTIMx, uint8_t EnorDi);
 void PWM2_5_Init(TIM_Handler_t *pTIMHandle);
 
 void ServoAngle(TIM2_5_RegDef_t *pTIMx, uint32_t Angle, uint8_t Channel);
+void PWMOutput(TIM2_5_RegDef_t *pTIMx, uint32_t DutyCycle, uint8_t Channel);
 
 
 #endif /* INC_STM32F407XX_TIMER_H_ */
