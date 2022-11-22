@@ -192,3 +192,24 @@ void ServoAngle(TIM2_5_RegDef_t *pTIMx, uint32_t Angle, uint8_t Channel)
 	}
 
 }
+
+void PWMOutput(TIM2_5_RegDef_t *pTIMx, uint32_t DutyCycle, uint8_t Channel)
+{
+	if(Channel == 1)
+	{
+		pTIMx->CCR1 = DutyCycle;
+	}
+	else if(Channel == 2)
+	{
+		pTIMx->CCR2 = DutyCycle;
+	}
+	else if(Channel == 3)
+	{
+		pTIMx->CCR3 = DutyCycle;
+	}
+	else if(Channel == 4)
+	{
+		pTIMx->CCR4 = DutyCycle;
+	}
+}
+
