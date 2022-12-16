@@ -595,7 +595,7 @@ typedef struct
 
 #define ENABLE			1
 #define DISABLE			0
-#define SET			ENABLE
+#define SET				ENABLE
 #define RESET			DISABLE
 #define HIGH			1
 
@@ -614,6 +614,14 @@ typedef struct
 
 #define BUSY			1
 #define FREE			0
+
+#define CLEAR			1
+#define RUN				0
+
+#define RED_B_PLUS			2
+#define BLACK_A_PLUS		1
+#define GREEN_A_MINUS		3
+#define BLUE_B_MINUS		4
 
 #include "stm32f407xx_gpio_driver.h"
 #include "stm32f407xx_timer.h"
