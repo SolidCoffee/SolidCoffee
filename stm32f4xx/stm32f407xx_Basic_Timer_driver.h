@@ -1,5 +1,4 @@
-/*
- * stm32f407xx_Basic_Timer_driver.h
+ /* stm32f407xx_Basic_Timer_driver.h
  *
  *  Created on: Apr 5, 2022
  *      Author: gianl
@@ -34,7 +33,7 @@ void TimerStart(BasicTIM_RegDef_t *pTIMx, uint32_t value);
 void TimerStop(BasicTIM_RegDef_t *pTIMx);
 void SR_clearer(uint32_t Timer);
 void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value);
-uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value);
+uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Clearer);
 
 __attribute__((__common__)) uint32_t Running_timer_counter6;
 __attribute__((__common__)) uint32_t Running_timer_counter7;
