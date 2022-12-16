@@ -15,6 +15,14 @@ void StepperStepsInc(uint32_t steps);
 void StepperStepsDec(uint32_t steps);
 void LeadStepsInc(uint32_t steps);
 void LeadStepsDec(uint32_t steps);
+void MicrostepsInc(uint32_t steps);
+void MicrostepsDec(uint32_t steps);
+
+void stepperInit(void);
+void PWMStepperTIM(void);
+void StepperPWM_GPIOInits(void);
+void StepperBasicTimer_init(void);
+
 
 #define BLUE 		10
 #define RED			14
