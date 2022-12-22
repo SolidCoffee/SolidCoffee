@@ -511,6 +511,14 @@ typedef struct
 //DAC clock enable macros
 #define DAC_CLK_EN()	(RCC->APB1ENR |= (1 << 29))
 
+//USART clock enable marcros
+#define USART1_CLK_EN()	(RCC->APB2ENR |= (1 << 4))
+#define USART6_CLK_EN()	(RCC->APB2ENR |= (1 << 5))
+#define USART2_CLK_EN()	(RCC->APB1ENR |= (1 << 17))
+#define USART3_CLK_EN()	(RCC->APB1ENR |= (1 << 8))
+#define UART4_CLK_EN()	(RCC->APB1ENR |= (1 << 9))
+#define UART5_CLK_EN()	(RCC->APB1ENR |= (1 << 10))
+
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
 #define GPIOB_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 1))
@@ -557,8 +565,13 @@ typedef struct
 //DAC clock disable macros
 #define DAC_CLK_DI()	(RCC->APB1ENR &= ~(1 << 29))
 
-//DAC clock reset macros
-//#define DAC_CLK_EN()
+//USART clock enable marcros
+#define USART1_CLK_DI()	(RCC->APB2ENR &= ~(1 << 4))
+#define USART6_CLK_DI()	(RCC->APB2ENR &= ~(1 << 5))
+#define USART2_CLK_DI()	(RCC->APB1ENR &= ~(1 << 17))
+#define USART3_CLK_DI()	(RCC->APB1ENR &= ~(1 << 8))
+#define UART4_CLK_DI()	(RCC->APB1ENR &= ~(1 << 9))
+#define UART5_CLK_DI()	(RCC->APB1ENR &= ~(1 << 10))
 
 
 //GPIO reset maco's
@@ -595,7 +608,7 @@ typedef struct
 
 #define ENABLE			1
 #define DISABLE			0
-#define SET				ENABLE
+#define SET			ENABLE
 #define RESET			DISABLE
 #define HIGH			1
 
@@ -616,9 +629,9 @@ typedef struct
 #define FREE			0
 
 #define CLEAR			1
-#define RUN				0
+#define RUN			0
 
-#define RED_B_PLUS			2
+#define RED_B_PLUS		2
 #define BLACK_A_PLUS		1
 #define GREEN_A_MINUS		3
 #define BLUE_B_MINUS		4
@@ -631,5 +644,6 @@ typedef struct
 #include "stm32f407xx_spi_driver.h"
 #include "stm32f407xx_DAC_driver.h"
 #include "stm32f407xx_Basic_Timer_driver.h"
+#include "stm32f407xx_USART_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */
