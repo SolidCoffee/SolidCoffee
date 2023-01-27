@@ -49,6 +49,7 @@ Processor specific details
 #define ADC_2_OFFSET		0x100U
 #define ADC_3_OFFSET		0x200U
 
+
 //AHB1 peripheral addresses
 #define GPIOA_BASE			((AHB1PERIPH_BASE)+(0x00))
 #define GPIOB_BASE			((AHB1PERIPH_BASE)+(0x0400))
@@ -70,6 +71,9 @@ Processor specific details
 #define ETHERNET_MAC_BASE	((AHB1PERIPH_BASE)+(0x8000))
 #define DMA2D_BASE			((AHB1PERIPH_BASE)+(0xB000))
 #define USB_OTG_HS_BASE		0x40040000
+
+//AHB2
+#define RNG_BASE			0x50060800
 
 
 //APB1 peripheral addresses
@@ -434,6 +438,16 @@ typedef struct
 #define ADC2		((ADC_RegDef_t*)ADC2_BASE)
 #define ADC3		((ADC_RegDef_t*)ADC3_BASE)
 
+typedef struct
+{
+	uint32_t CR;
+	uint32_t SR;
+	uint32_t DR;
+
+}RNG_RegDef_t;
+
+#define RNG1			((RNG_RegDef_t*)RNG_BASE)
+
 
 //IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
@@ -457,7 +471,8 @@ typedef struct
 #define IRQ_I2C3_EV			79
 #define IRQ_I2C3_ER			80
 
-
+//RNG clock enable
+#define RNG_PLCK_EN()	(RCC->AHB2ENR |= (1 << 6))
 //enable clock for GPIOx peripherals
 #define GPIOA_PCLK_EN()	(RCC->AHB1ENR |= (1 << 0))
 #define GPIOB_PCLK_EN()	(RCC->AHB1ENR |= (1 << 1))
@@ -518,6 +533,11 @@ typedef struct
 #define USART3_CLK_EN()	(RCC->APB1ENR |= (1 << 8))
 #define UART4_CLK_EN()	(RCC->APB1ENR |= (1 << 9))
 #define UART5_CLK_EN()	(RCC->APB1ENR |= (1 << 10))
+
+
+//RNG clock enable
+#define RNG_PLCK_DI()	(RCC->AHB2ENR &= ~(1 << 6))
+
 
 //Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()	(RCC->AHB1ENR &= ~(1 << 0))
@@ -608,7 +628,7 @@ typedef struct
 
 #define ENABLE			1
 #define DISABLE			0
-#define SET			ENABLE
+#define SET				ENABLE
 #define RESET			DISABLE
 #define HIGH			1
 
@@ -629,9 +649,9 @@ typedef struct
 #define FREE			0
 
 #define CLEAR			1
-#define RUN			0
+#define RUN				0
 
-#define RED_B_PLUS		2
+#define RED_B_PLUS			2
 #define BLACK_A_PLUS		1
 #define GREEN_A_MINUS		3
 #define BLUE_B_MINUS		4
@@ -645,5 +665,8 @@ typedef struct
 #include "stm32f407xx_DAC_driver.h"
 #include "stm32f407xx_Basic_Timer_driver.h"
 #include "stm32f407xx_USART_driver.h"
+#include "stm32f407xx_LCD_driver.h"
+#include "stm32f407xx_RNG_driver.h"
+#include "stm32f407xx_RCC_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */
