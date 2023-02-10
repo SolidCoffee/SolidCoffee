@@ -59,7 +59,7 @@ void TimerStop(BasicTIM_RegDef_t *pTIMx)
 	pTIMx->CR1 &= ~(1 << 0);
 }
 
-void SR_clearer(uint32_t Timer)
+/*void SR_clearer(uint32_t Timer)
 {
 	if(Timer == 6)
 	{
@@ -70,16 +70,23 @@ void SR_clearer(uint32_t Timer)
 		TIM7->SR &= ~(1 << 0);
 	}
 
+}*/
+
+void SR_clearer(BasicTIM_RegDef_t *pTIMx)
+{
+	pTIMx->SR &= ~(1 << 0);
 }
 
-void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
+/*void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 {
 	uint32_t clearer_flg=0;
+	pTIMx->ARR &= ~(0xFFFF);
 	pTIMx->ARR = value;
 	pTIMx->CR1 |= (1 << 0);
 
 	if(pTIMx == TIM6)
 	{
+		pTIMx->CNT = 0;
 		SR_clearer(6);
 		while(!TIM6->SR)
 		{
@@ -88,6 +95,7 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 	}
 	else if(pTIMx == TIM7)
 	{
+		pTIMx->CNT = 0;
 		SR_clearer(7);
 		while(!TIM7->SR)
 		{
@@ -99,18 +107,50 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 	{
 		if(pTIMx == TIM6)
 		{
+			pTIMx->CR1 &= ~(1 << 0);
+			pTIMx->ARR &= ~(0xFFFF);
+			pTIMx->CNT = 0;
 			SR_clearer(6);
 		}
 		else if(pTIMx == TIM7)
 		{
+			pTIMx->CR1 &= ~(1 << 0);
+			pTIMx->ARR &= ~(0xFFFF);
+			pTIMx->CNT = 0;
 			SR_clearer(7);
 		}
 		clearer_flg=0;
 	}
 
+
+
+}*/
+
+void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
+{
+	uint32_t clearer_flg=0;
+	pTIMx->ARR &= ~(0xFFFF);
+	pTIMx->ARR = value;
+	pTIMx->CR1 |= (1 << 0);
+
+	pTIMx->CNT = 0;
+	SR_clearer(pTIMx);
+	while(!pTIMx->SR)
+	{
+		clearer_flg=1;
+	}
+
+	if(clearer_flg)
+	{
+		pTIMx->CR1 &= ~(1 << 0);
+		pTIMx->ARR &= ~(0xFFFF);
+		pTIMx->CNT = 0;
+		SR_clearer(pTIMx);
+		clearer_flg=0;
+	}
 }
 
-uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Clearer)
+/*uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Clearer)
 {
 	pTIMx->ARR = value;
 	pTIMx->CR1 |= (1 << 0);
@@ -145,5 +185,4 @@ uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Cle
 		return Running_timer_counter7;
 	}
 	return 0;
-}
-
+}*/
