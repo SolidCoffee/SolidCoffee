@@ -150,7 +150,7 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 	}
 }
 
-/*uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Clearer)
+uint32_t RunningTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value, uint8_t Clearer)
 {
 	pTIMx->ARR = value;
 	pTIMx->CR1 |= (1 << 0);
@@ -166,7 +166,7 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 		else if(TIM6->SR)
 		{
 			Running_timer_counter6++;
-			SR_clearer(6);
+			SR_clearer(TIM6);
 		}
 		return Running_timer_counter6;
 	}
@@ -177,12 +177,13 @@ void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
 		{
 			Running_timer_counter7 = 0;
 		}
-		else if(TIM6->SR)
+		else if(TIM7->SR)
 		{
 			Running_timer_counter7++;
-			SR_clearer(7);
+			SR_clearer(TIM7);
 		}
 		return Running_timer_counter7;
 	}
 	return 0;
-}*/
+}
+
