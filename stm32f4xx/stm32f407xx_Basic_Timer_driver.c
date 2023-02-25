@@ -69,7 +69,6 @@ void TimerStop(BasicTIM_RegDef_t *pTIMx)
 	{
 		TIM7->SR &= ~(1 << 0);
 	}
-
 }*/
 
 void SR_clearer(BasicTIM_RegDef_t *pTIMx)
@@ -83,7 +82,6 @@ void SR_clearer(BasicTIM_RegDef_t *pTIMx)
 	pTIMx->ARR &= ~(0xFFFF);
 	pTIMx->ARR = value;
 	pTIMx->CR1 |= (1 << 0);
-
 	if(pTIMx == TIM6)
 	{
 		pTIMx->CNT = 0;
@@ -102,7 +100,6 @@ void SR_clearer(BasicTIM_RegDef_t *pTIMx)
 			clearer_flg=1;
 		}
 	}
-
 	if(clearer_flg)
 	{
 		if(pTIMx == TIM6)
@@ -121,9 +118,6 @@ void SR_clearer(BasicTIM_RegDef_t *pTIMx)
 		}
 		clearer_flg=0;
 	}
-
-
-
 }*/
 
 void StopTimerDelay(BasicTIM_RegDef_t *pTIMx, uint32_t value)
