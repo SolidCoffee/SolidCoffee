@@ -46,3 +46,6 @@ void lcd_send_data_8_bit(uint8_t data);
 void lcd_print_string(char *message);
 void lcd_print_string_8_bit(char *message);
 void lcd_send_string (char *str);
+void lcd_set_cursor(uint8_t row, uint8_t column);
+
+#endif /* INC_STM32F407XX_LCD_DRIVER_H_ */
