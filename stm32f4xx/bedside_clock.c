@@ -26,6 +26,19 @@ uint8_t screen_on_flg=0;
 uint8_t screen_timer=0;
 char Temp_C[10];
 char Temp_C_D[10];
+char Hour_Char[10];
+char Minute_Char[10];
+char Seconds_Char[10];
+char Year_Char[10];
+char Month_Char[10];
+char Day_Char[10];
+uint32_t Hour = 0;
+uint32_t Minute = 0;
+uint32_t Seconds = 0;
+uint32_t Year = 0;
+uint32_t Month = 0;
+uint32_t Day = 0;
+uint32_t Time_Register=0;
 
 void GPIOInits(void)
 {
@@ -63,6 +76,24 @@ void InputGPIOInits(void)
 		ButtonPins.GPIO_PinConfig.GPIO_PinNumber = 5;
 		GPIO_Init(&ButtonPins);
 
+}
+
+void RTC_Config(void)
+{
+	RTC_Handler_t RTCConfig;
+
+	RTCConfig.pRTCx = RTC;
+
+	RTCConfig.RTC_PinConfig.Year =23;
+	RTCConfig.RTC_PinConfig.Month = FEBRUARY;
+	RTCConfig.RTC_PinConfig.Date_Num = 25;
+	RTCConfig.RTC_PinConfig.Day_Name = SATURDAY;
+	RTCConfig.RTC_PinConfig.Hour = 9;
+	RTCConfig.RTC_PinConfig.Minute = 14;
+	RTCConfig.RTC_PinConfig.Second = 15;
+	RTCConfig.RTC_PinConfig.AmOrPm = PM;
+
+	RTC_Init(&RTCConfig);
 }
 
 void MovementSensorGPIOInits(void)
@@ -125,6 +156,11 @@ void DHT11_GetValues(void)
 	Humidity_d=0;
 	Temp_i=0;
 	Temp_d=0;
+
+	sprintf(Humidity, "%d", Humidity_i);
+	sprintf(Humidity_D, "%d", Humidity_d);
+	sprintf(Temp, "%d", Temp_i);
+	sprintf(Temp_D, "%d", Temp_d);
 
 	GPIOInits();
 
@@ -285,9 +321,36 @@ void LCD_Screen_Movement(void)
 
 }
 
+void ReadClockVals(void)
+{
+	//char AMorPM;
+
+
+	Time_Register = RTC->TR;
+	//Date_Register = RTC->DR;
+
+	Hour= (((Time_Register >> 20) & 3)*10) + ((Time_Register >> 16) & 15);
+	Minute = (((Time_Register >> 12) & 7)*10) + ((Time_Register >> 8) & 15);
+	//Seconds = ((RTC->TR & 7 << 4)*10) + (RTC->TR & 15 << 0);  //wrong equation need to be like above
+
+
+
+	Year = (((RTC->DR >> 20) & 15)*10) + ((RTC->DR >> 16) & 15);
+	Month = (((RTC->DR >> 12) & 1)*10) + ((RTC->DR >> 8) & 15);
+	Day = (((RTC->DR >> 4) & 3 )*10) + (RTC->DR & 15 << 0);
+
+	sprintf(Hour_Char, "%ld", Hour);
+	sprintf(Minute_Char, "%ld", Minute);
+	sprintf(Seconds_Char, "%ld", Seconds);
+	sprintf(Year_Char, "%ld", Year);
+	sprintf(Month_Char, "%ld", Month);
+	sprintf(Day_Char,"%ld", Day);
+}
+
 
 int main(void)
 {
+	RTC_Config();
 	Tim6Init();
 	lcd_init();
 	MovementSensorGPIOInits();
@@ -298,9 +361,32 @@ int main(void)
 	{
 		DHT11_GetValues();
 
-		lcd_print_string(Temp_C);
-		lcd_print_string(".");
-		lcd_print_string(Temp_C_D);
+		ReadClockVals();
+
+		lcd_set_cursor(1, 1);
+		lcd_print_string(Hour_Char);
+		lcd_print_string(":");
+		if(Minute < 10)
+		{
+			lcd_print_string("0");
+		}
+		lcd_print_string(Minute_Char);
+
+		if((Time_Register & (1 << 22)))
+		{
+			lcd_print_string("PM");
+		}
+		else
+		{
+			lcd_print_string("AM");
+		}
+
+		lcd_set_cursor(1, 9);
+		lcd_print_string(Month_Char);
+		lcd_print_string("/");
+		lcd_print_string(Day_Char);
+		lcd_print_string("/");
+		lcd_print_string(Year_Char);
 
 		lcd_set_cursor(2, 1);
 		lcd_print_string("T:");
@@ -316,8 +402,8 @@ int main(void)
 		lcd_print_string("%");
 		for(uint32_t i=0;i<1000000;i++);
 
-		lcd_display_clear();  //also resets cursor to start
-		for(uint32_t i=0;i<100000;i++);
+		//lcd_display_clear();  //also resets cursor to start
+		//for(uint32_t i=0;i<100000;i++);
 
 		LCD_Screen_Movement();
 
@@ -326,7 +412,6 @@ int main(void)
 }
 
 /*DHT11Init();
-
 		for(uint8_t i = 0; i <= 41; i++)
 		{
 			while(!GPIO_ReadFromInputPin(GPIOB, 5));
@@ -339,11 +424,8 @@ int main(void)
 					break;
 				}
 			}
-
 			DHT11_time[i]=DHT11_Counter; //array to check the time for each counter
-
 			RunningTimerDelay(TIM6, 1, CLEAR);  //clears the internal
-
 			if(break_flg)
 			{
 				break_flg=0;
@@ -351,7 +433,6 @@ int main(void)
 				DHT11_Counter =0;
 				break;
 			}
-
 			if(DHT11_Counter > 5)
 			{
 				DHT11[i]=1;
@@ -376,11 +457,8 @@ int main(void)
 					break;
 				}
 			}
-
 			DHT11_time[i]=DHT11_Counter; //array to check the time for each counter
-
 			RunningTimerDelay(TIM6, 1, CLEAR);
-
 			if(i == 0)
 			{
 				DHT11_Counter =0;
@@ -446,6 +524,5 @@ int main(void)
 			{
 				DHT11_Counter =0;
 			}
-
 			DHT11_Counter =0;
 		}*/
