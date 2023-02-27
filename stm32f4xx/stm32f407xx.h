@@ -96,6 +96,8 @@ Processor specific details
 #define TIM12_BASE			((APB1PERIPH_BASE)+(0x1800))
 #define TIM13_BASE			((APB1PERIPH_BASE)+(0x1C00))
 #define TIM14_BASE			((APB1PERIPH_BASE)+(0x2000))
+#define RTC_BASE			((APB1PERIPH_BASE)+(0x2800))
+#define PWR_BASE			((APB1PERIPH_BASE)+(0x7000))
 
 
 //APB2 peripheral addresses
@@ -448,6 +450,41 @@ typedef struct
 
 #define RNG1			((RNG_RegDef_t*)RNG_BASE)
 
+typedef struct
+{
+	uint32_t TR;
+	uint32_t DR;
+	uint32_t CR;
+	uint32_t ISR;
+	uint32_t PRER;
+	uint32_t WUTR;
+	uint32_t CALIBR;
+	uint32_t ALRMAR;
+	uint32_t ALRMBR;
+	uint32_t WPR;
+	uint32_t SSR;
+	uint32_t SHIFTR;
+	uint32_t TSTR;
+	uint32_t TSSSR;
+	uint32_t CALR;
+	uint32_t TAFCR;
+	uint32_t ALRMASSR;
+	uint32_t ALRMBSSR;
+	uint32_t BKPOR;
+	uint32_t BKP19R;
+
+}RTC_RegDef_t;
+
+#define RTC			((RTC_RegDef_t*)RTC_BASE)
+
+typedef struct
+{
+	uint32_t CR;
+	uint32_t CSR;
+}PWR_RegDef_t;
+
+#define PWR			((PWR_RegDef_t*)PWR_BASE)
+
 
 //IRQ interupt request for GPIO
 #define IRQ_NO_EXTI0		6
@@ -594,6 +631,7 @@ typedef struct
 #define UART5_CLK_DI()	(RCC->APB1ENR &= ~(1 << 10))
 
 
+
 //GPIO reset maco's
 #define GPIOA_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 <<  0)); }while(0)
 #define GPIOB_REG_RESET()		do{ (RCC->AHB1RSTR |= (1 << 1)); (RCC->AHB1RSTR &= ~(1 <<  1)); }while(0)
@@ -668,5 +706,7 @@ typedef struct
 #include "stm32f407xx_LCD_driver.h"
 #include "stm32f407xx_RNG_driver.h"
 #include "stm32f407xx_RCC_driver.h"
+#include "stm32f407xx_RTC_driver.h"
+
 
 #endif /* INC_STM32F407XX_H_ */
